@@ -19,6 +19,7 @@ import { liberiaDate } from '@/lib/time';
 import { PassportPhotoPicker, OfficerPhoto, uploadOfficerPhoto } from '@/components/PassportPhoto';
 import { StaffIdCardDialog } from '@/components/StaffIdCard';
 import { EstablishmentPicker } from '@/components/EstablishmentPicker';
+import { ReportingSupervisors } from '@/components/ReportingSupervisors';
 
 type F = { name: string; label: string; type?: string; options?: string[] | { value: string; label: string }[]; col?: boolean; wide?: boolean };
 const COLUMN_FIELDS = new Set(['service_number', 'first_name', 'middle_name', 'last_name', 'gender', 'date_of_birth', 'nationality', 'marital_status', 'blood_group', 'phone', 'email', 'address', 'county', 'employment_status', 'employment_type', 'office_id', 'section_id', 'rank', 'position', 'date_joined', 'supervisor_id', 'establishment_post_id', 'lnp_class_number', 'education', 'promotion_history', 'training_history']);
@@ -118,6 +119,7 @@ export function HREnrollment({ d }: { d: HRData }) {
       <div className="ml-auto flex gap-2">
         <Button variant="outline" size="sm" onClick={() => exportPdf('Personnel registry', rows())}>PDF</Button>
         <Button variant="outline" size="sm" onClick={() => exportExcel('personnel-registry', rows())}>Excel</Button>
+        {canWrite && <ReportingSupervisors employees={emps} />}
         {canWrite && <Button size="sm" onClick={() => open('new')}>Enroll personnel</Button>}
       </div>
     </div>
