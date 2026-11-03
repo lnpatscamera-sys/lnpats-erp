@@ -1,4 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { InstructorTraining } from '@/components/InstructorTraining';
+import { isInstructorWorkspace } from '@/lib/officer-access';
+import { instructorOptions } from '@/lib/instructor';
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -25,7 +28,7 @@ import {
 
 export const Route = createFileRoute("/_authenticated/training")({
   head: () => ({ meta: [{ title: "Training Management — LNPATS ERP" }, { name: "description", content: "LNPATS training management: cadets, programs, courses, attendance, assessments, graduation and certificates." }, { property: "og:title", content: "Training Management — LNPATS ERP" }, { property: "og:description", content: "LNPATS training management: cadets, programs, courses, attendance, assessments, graduation and certificates." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
-  loader: async ({ context }) => { await context.queryClient.ensureQueryData(trainingOptions); },
+  loader: async ({ context }) => { const r = await supabase.auth.getUser(); const roles = await supabase.from('user_roles').select('role').eq('user_id', r.data.user?.id ?? ''); if (isInstructorWorkspace((roles.data ?? []).map(x => x.role))) await context.queryClient.ensureQueryData(instructorOptions); else await context.queryClient.ensureQueryData(trainingOptions); },
   component: Training,
 });
 
@@ -33,6 +36,10 @@ const COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--cha
 const today = () => liberiaDate();
 
 function Training() {
+  const { roles } = useAuth();
+  return isInstructorWorkspace(roles) ? <InstructorTraining view="courses" /> : <TrainingAdministration />;
+}
+function TrainingAdministration() {
   const { hasAny } = useAuth();
   const { data } = useSuspenseQuery(trainingOptions);
   const [tab, setTab] = useState("dashboard");
@@ -41,7 +48,7 @@ function Training() {
   const canGraduate = hasAny(GRADUATION_ROLES);
   return (
     <div>
-      <PageHeader title="Training Management" subtitle="Cadets, programs, attendance, assessments, graduation and certification" />
+      <PageHeader title="Training Management" subtitle="Cadets, programs, attendance, assessments, graduation and certification" actions={canAdmin && <><Button asChild variant="outline"><Link to="/training-schedule">Training Schedule</Link></Button><Button asChild variant="outline"><Link to="/course-materials">Course Materials</Link></Button><Button asChild variant="outline"><Link to="/lesson-plans">Lesson Plans</Link></Button></>} />
       <Tabs value={tab} onValueChange={setTab} className="mb-6 max-w-full overflow-x-auto">
         <TabsList>
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>

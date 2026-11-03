@@ -1,0 +1,62 @@
+CREATE OR REPLACE FUNCTION public.instructor_workspace() RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$ SELECT auth.uid() IS NOT NULL AND EXISTS(SELECT 1 FROM user_roles WHERE user_id=auth.uid() AND role='instructor') AND NOT EXISTS(SELECT 1 FROM user_roles WHERE user_id=auth.uid() AND role NOT IN ('officer','instructor')) $$;
+REVOKE ALL ON FUNCTION public.instructor_workspace() FROM PUBLIC; GRANT EXECUTE ON FUNCTION public.instructor_workspace() TO authenticated,service_role;
+CREATE OR REPLACE FUNCTION public.officer_personal_only() RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$ SELECT auth.uid() IS NOT NULL AND (NOT EXISTS(SELECT 1 FROM user_roles WHERE user_id=auth.uid() AND role<>'officer') OR public.instructor_workspace()) $$;
+CREATE OR REPLACE FUNCTION public.instructor_course_access(_course uuid) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$ SELECT auth.uid() IS NOT NULL AND (public.has_any_role(auth.uid(),ARRAY['dc_academy']::app_role[]) OR (public.has_role(auth.uid(),'instructor') AND EXISTS(SELECT 1 FROM courses c JOIN instructors i ON i.id=c.instructor_id JOIN officers o ON o.id=i.officer_id WHERE c.id=_course AND o.user_id=auth.uid() AND o.employment_status='Active'))) $$;
+REVOKE ALL ON FUNCTION public.instructor_course_access(uuid) FROM PUBLIC; GRANT EXECUTE ON FUNCTION public.instructor_course_access(uuid) TO authenticated,service_role;
+CREATE OR REPLACE FUNCTION public.instructor_student_access(_course uuid,_cadet uuid) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$ SELECT public.instructor_course_access(_course) AND EXISTS(SELECT 1 FROM courses co JOIN cadets c ON c.id=_cadet WHERE co.id=_course AND (c.program_id=co.training_program_id OR EXISTS(SELECT 1 FROM program_enrollments e WHERE e.cadet_id=c.id AND e.program_id=co.training_program_id AND e.status='Active'))) $$;
+REVOKE ALL ON FUNCTION public.instructor_student_access(uuid,uuid) FROM PUBLIC; GRANT EXECUTE ON FUNCTION public.instructor_student_access(uuid,uuid) TO authenticated,service_role;
+CREATE OR REPLACE FUNCTION public.instructor_roster() RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path=public AS $$ BEGIN IF auth.uid() IS NULL OR NOT public.has_any_role(auth.uid(),ARRAY['instructor','dc_academy']::app_role[]) THEN RAISE EXCEPTION 'Instructor permission required'; END IF; RETURN coalesce((SELECT jsonb_agg(jsonb_build_object('id',c.id,'name',concat_ws(' ',c.first_name,c.last_name),'cadet_number',c.cadet_number,'course_id',co.id,'status',c.status)) FROM courses co JOIN cadets c ON (c.program_id=co.training_program_id OR EXISTS(SELECT 1 FROM program_enrollments e WHERE e.cadet_id=c.id AND e.program_id=co.training_program_id AND e.status='Active')) WHERE public.instructor_course_access(co.id)),'[]'::jsonb); END $$;
+REVOKE ALL ON FUNCTION public.instructor_roster() FROM PUBLIC; GRANT EXECUTE ON FUNCTION public.instructor_roster() TO authenticated;
+CREATE TABLE public.course_lesson_plans(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),course_id uuid NOT NULL REFERENCES public.courses(id),title text NOT NULL CHECK(length(trim(title))>0),objectives text NOT NULL,content text NOT NULL,lesson_date date NOT NULL,created_by uuid NOT NULL DEFAULT auth.uid(),created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT,INSERT,UPDATE ON public.course_lesson_plans TO authenticated; GRANT ALL ON public.course_lesson_plans TO service_role;
+ALTER TABLE public.course_lesson_plans ENABLE ROW LEVEL SECURITY;
+CREATE POLICY lesson_access ON public.course_lesson_plans FOR SELECT TO authenticated USING(public.instructor_course_access(course_id));
+CREATE POLICY lesson_create ON public.course_lesson_plans FOR INSERT TO authenticated WITH CHECK(public.instructor_course_access(course_id) AND created_by=auth.uid());
+CREATE POLICY lesson_update ON public.course_lesson_plans FOR UPDATE TO authenticated USING(public.instructor_course_access(course_id) AND created_by=auth.uid()) WITH CHECK(public.instructor_course_access(course_id) AND created_by=auth.uid());
+CREATE TRIGGER audit_lesson_plans AFTER INSERT OR UPDATE OR DELETE ON public.course_lesson_plans FOR EACH ROW EXECUTE FUNCTION public.audit_trigger();
+CREATE TABLE public.course_sessions(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),course_id uuid NOT NULL REFERENCES public.courses(id),title text NOT NULL CHECK(length(trim(title))>0),starts_at timestamptz NOT NULL,ends_at timestamptz NOT NULL CHECK(ends_at>starts_at),location text NOT NULL,created_by uuid NOT NULL DEFAULT auth.uid(),created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT,INSERT,UPDATE ON public.course_sessions TO authenticated; GRANT ALL ON public.course_sessions TO service_role;
+ALTER TABLE public.course_sessions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY session_read ON public.course_sessions FOR SELECT TO authenticated USING(public.instructor_course_access(course_id));
+CREATE POLICY session_create ON public.course_sessions FOR INSERT TO authenticated WITH CHECK(public.has_any_role(auth.uid(),ARRAY['dc_academy']::app_role[]) AND created_by=auth.uid());
+CREATE POLICY session_update ON public.course_sessions FOR UPDATE TO authenticated USING(public.has_any_role(auth.uid(),ARRAY['dc_academy']::app_role[])) WITH CHECK(public.has_any_role(auth.uid(),ARRAY['dc_academy']::app_role[]));
+CREATE TRIGGER audit_course_sessions AFTER INSERT OR UPDATE OR DELETE ON public.course_sessions FOR EACH ROW EXECUTE FUNCTION public.audit_trigger();
+CREATE TABLE public.course_materials(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),course_id uuid NOT NULL REFERENCES public.courses(id),title text NOT NULL CHECK(length(trim(title))>0),file_path text NOT NULL UNIQUE,created_by uuid NOT NULL DEFAULT auth.uid(),created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT,INSERT ON public.course_materials TO authenticated; GRANT ALL ON public.course_materials TO service_role;
+ALTER TABLE public.course_materials ENABLE ROW LEVEL SECURITY;
+CREATE POLICY material_read ON public.course_materials FOR SELECT TO authenticated USING(public.instructor_course_access(course_id));
+CREATE POLICY material_create ON public.course_materials FOR INSERT TO authenticated WITH CHECK(public.instructor_course_access(course_id) AND created_by=auth.uid() AND split_part(file_path,'/',1)=course_id::text AND split_part(file_path,'/',2)=auth.uid()::text AND EXISTS(SELECT 1 FROM storage.objects WHERE bucket_id='training-materials' AND name=file_path));
+CREATE TRIGGER audit_course_materials AFTER INSERT OR UPDATE OR DELETE ON public.course_materials FOR EACH ROW EXECUTE FUNCTION public.audit_trigger();
+CREATE OR REPLACE FUNCTION public.instructor_material_reader(_path text) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$ SELECT EXISTS(SELECT 1 FROM course_materials m WHERE m.file_path=_path AND public.instructor_course_access(m.course_id)) $$;
+REVOKE ALL ON FUNCTION public.instructor_material_reader(text) FROM PUBLIC; GRANT EXECUTE ON FUNCTION public.instructor_material_reader(text) TO authenticated;
+CREATE POLICY instructor_material_upload ON storage.objects FOR INSERT TO authenticated WITH CHECK(bucket_id='training-materials' AND split_part(name,'/',2)=auth.uid()::text AND public.instructor_course_access(nullif(split_part(name,'/',1),'')::uuid));
+CREATE POLICY instructor_material_read ON storage.objects FOR SELECT TO authenticated USING(bucket_id='training-materials' AND public.instructor_material_reader(name));
+DO $$ DECLARE t text; scope text; BEGIN
+ FOR t IN SELECT unnest(ARRAY['courses','assessments','attendance_records','assessment_results']) LOOP
+ scope:=CASE t WHEN 'courses' THEN 'public.instructor_course_access(id)' WHEN 'assessments' THEN 'public.instructor_course_access(course_id)' WHEN 'attendance_records' THEN 'public.instructor_student_access(course_id,cadet_id)' ELSE 'EXISTS(SELECT 1 FROM public.assessments a WHERE a.id=assessment_id AND public.instructor_student_access(a.course_id,cadet_id))' END;
+ EXECUTE format('ALTER POLICY officer_personal_read ON public.%I USING (NOT public.officer_personal_only() OR (public.instructor_workspace() AND %s) OR %s)',t,scope,CASE WHEN t IN ('attendance_records','assessment_results') THEN 'EXISTS(SELECT 1 FROM public.cadets c WHERE c.id=cadet_id AND c.user_id=auth.uid())' ELSE 'false' END);
+ EXECUTE format('CREATE POLICY instructor_assigned_read ON public.%I FOR SELECT TO authenticated USING (%s)',t,scope);
+ IF t IN ('attendance_records','assessment_results') THEN
+ EXECUTE format('ALTER POLICY officer_personal_insert ON public.%I WITH CHECK (NOT public.officer_personal_only() OR (public.instructor_workspace() AND %s))',t,scope);
+ EXECUTE format('ALTER POLICY officer_personal_update ON public.%I USING (NOT public.officer_personal_only() OR (public.instructor_workspace() AND %s)) WITH CHECK (NOT public.officer_personal_only() OR (public.instructor_workspace() AND %s))',t,scope,scope);
+ EXECUTE format('CREATE POLICY instructor_assigned_insert ON public.%I FOR INSERT TO authenticated WITH CHECK (%s)',t,scope);
+ EXECUTE format('CREATE POLICY instructor_assigned_update ON public.%I FOR UPDATE TO authenticated USING (%s) WITH CHECK (%s)',t,scope,scope);
+ END IF;
+ END LOOP;
+END $$;
+CREATE OR REPLACE FUNCTION public.instructor_training_guard() RETURNS trigger LANGUAGE plpgsql SET search_path=public AS $$ DECLARE co uuid; mx numeric; BEGIN
+ IF NOT public.instructor_workspace() THEN RETURN NEW; END IF;
+ IF TG_TABLE_NAME='attendance_records' THEN co:=NEW.course_id; NEW.recorded_by:=auth.uid(); IF NEW.status NOT IN ('Present','Absent','Excused','Late') THEN RAISE EXCEPTION 'Invalid attendance status'; END IF; IF TG_OP='UPDATE' AND (NEW.course_id<>OLD.course_id OR NEW.cadet_id<>OLD.cadet_id OR NEW.attendance_date<>OLD.attendance_date) THEN RAISE EXCEPTION 'Attendance identity cannot change'; END IF;
+ ELSE SELECT course_id,max_score INTO co,mx FROM assessments WHERE id=NEW.assessment_id; IF NEW.score<0 OR NEW.score>mx THEN RAISE EXCEPTION 'Score must be between zero and the examination maximum'; END IF; NEW.grade:=CASE WHEN NEW.score/mx*100>=80 THEN 'A' WHEN NEW.score/mx*100>=70 THEN 'B' WHEN NEW.score/mx*100>=60 THEN 'C' WHEN NEW.score/mx*100>=50 THEN 'D' ELSE 'F' END; IF TG_OP='UPDATE' AND (NEW.assessment_id<>OLD.assessment_id OR NEW.cadet_id<>OLD.cadet_id) THEN RAISE EXCEPTION 'Assessment identity cannot change'; END IF; IF EXISTS(SELECT 1 FROM assessments WHERE id=NEW.assessment_id AND results_published) THEN RAISE EXCEPTION 'Published scores are locked'; END IF; END IF;
+ IF NOT public.instructor_student_access(co,NEW.cadet_id) THEN RAISE EXCEPTION 'Assigned course and enrolled student required'; END IF; RETURN NEW; END $$;
+CREATE TRIGGER instructor_attendance_guard BEFORE INSERT OR UPDATE ON public.attendance_records FOR EACH ROW EXECUTE FUNCTION public.instructor_training_guard();
+CREATE TRIGGER instructor_result_guard BEFORE INSERT OR UPDATE ON public.assessment_results FOR EACH ROW EXECUTE FUNCTION public.instructor_training_guard();
+DO $$ DECLARE d text; BEGIN
+ SELECT pg_get_functiondef('public.command_chain(uuid,boolean)'::regprocedure) INTO d;
+ d:=replace(d,'ids:=ARRAY[o.supervisor_id,','IF NOT _supply AND public.has_role(o.user_id,''instructor'') THEN ids:=ARRAY[o.supervisor_id,(SELECT officer_id FROM reporting_lines WHERE kind=''Deputy Commandant'' AND office_id IS NULL),(SELECT officer_id FROM reporting_lines WHERE kind=''Commandant'' AND office_id IS NULL)]; labels:=ARRAY[''Chief Instructor'',''Deputy Commandant'',''Commandant'']; ELSE ids:=ARRAY[o.supervisor_id,');
+ d:=replace(d,'FOR x IN 1..5 LOOP','END IF; FOR x IN 1..cardinality(ids) LOOP');
+ d:=replace(d,'role_needed:=CASE x','role_needed:=CASE WHEN cardinality(ids)=3 THEN CASE x WHEN 1 THEN ''dc_academy''::app_role WHEN 2 THEN ''deputy_commandant''::app_role WHEN 3 THEN ''commandant''::app_role END ELSE CASE x');
+ d:=replace(d,'WHEN 5 THEN ''commandant''::app_role END;','WHEN 5 THEN ''commandant''::app_role END END;');
+ EXECUTE d;
+ SELECT pg_get_functiondef('public.daily_report_action(uuid,text,jsonb)'::regprocedure) INTO d; d:=replace(replace(d,'r.stage=5','r.stage=jsonb_array_length(r.chain)'),'r.stage<5','r.stage<jsonb_array_length(r.chain)'); EXECUTE d;
+END $$;

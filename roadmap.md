@@ -1,6 +1,8 @@
 # LNPATS ERP Roadmap
 
 ## Phase 1 (now)
+- [x] Add Instructor role, restricted personal workspace, assigned-course teaching tools and HR-supervisor reporting chain; permission tests and signed-in lesson creation verified.
+- [ ] Verify the Instructor-only workspace with a real assigned Instructor account — HR must approve an Instructor appointment and training administration must link the instructor profile and assign courses; no existing account currently holds Instructor.
 - [x] Restrict Officer-only accounts to seven personal areas, enforce owner-only records and private files, and add My Activities. Real Officer session verified personal profile and blocked HR; 45 access/workflow tests passed. Existing mailbox not connected, so real mail remains unverified.
 - [x] Restore dashboard rank counts and prevent clipped leave-type labels; verified signed-in desktop and 695px layouts with real records.
 - [x] Fix login session request loop and verify signed-in access.

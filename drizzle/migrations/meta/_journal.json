@@ -379,6 +379,48 @@
       "when": 1793707750796,
       "tag": "0053_ict_media_officer_roles",
       "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1793712138209,
+      "tag": "0054_instructor_role",
+      "breakpoints": true
+    },
+    {
+      "idx": 55,
+      "version": "7",
+      "when": 1793712258092,
+      "tag": "0055_instructor_assigned_training",
+      "breakpoints": true
+    },
+    {
+      "idx": 56,
+      "version": "7",
+      "when": 1793712348524,
+      "tag": "0056_instructor_private_material_access",
+      "breakpoints": true
+    },
+    {
+      "idx": 57,
+      "version": "7",
+      "when": 1793712380775,
+      "tag": "0057_instructor_upload_validation",
+      "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "7",
+      "when": 1793712457534,
+      "tag": "0058_chief_instructor_reporting_role",
+      "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1793712475365,
+      "tag": "0059_instructor_supervisor_authorization",
+      "breakpoints": true
     }
   ]
 }

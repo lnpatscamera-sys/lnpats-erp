@@ -1,0 +1,1 @@
+ALTER POLICY officer_personal_files ON storage.objects USING(NOT public.officer_personal_only() OR public.officer_personal_file_reader(bucket_id,name) OR (public.instructor_workspace() AND bucket_id='training-materials' AND public.instructor_material_reader(name)));
