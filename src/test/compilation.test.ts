@@ -55,6 +55,7 @@ it('requires a reason to return or request clarification',async()=>{
  expect((await db.query<{status:string}>('select status from compiled_reports where id=$1',[compilationId])).rows[0]?.status).toBe('Clarification Requested');
 });
 it('forwards upward along the reporting chain and approves at the top',async()=>{
+ await db.exec(`UPDATE compiled_reports SET source_snapshots=jsonb_set(source_snapshots,'{0,chain}','[{"level":"Supervisor","user_id":"${reviewer}"},{"level":"Deputy Commandant","user_id":"${deputy}"}]') WHERE id='${compilationId}'`);
  await db.query(`select compilation_action($1,'forward','{}')`,[compilationId]);
  const fwd=await db.query<{status:string;recipient_id:string}>('select status,recipient_id from compiled_reports where id=$1',[compilationId]);
  expect(fwd.rows[0]?.status).toBe('Forwarded');
