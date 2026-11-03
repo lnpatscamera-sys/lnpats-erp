@@ -14,7 +14,7 @@ import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { OfficialMailNavLink } from "./OfficialMail";
-import { canOpenOfficerPath, isPersonalAccount } from "@/lib/officer-access";
+import { canOpenOfficerPath, isIctOfficerWorkspace, isPersonalAccount } from "@/lib/officer-access";
 
 type NavItem = { to: string; label: string; icon: typeof Users; params?: Record<string, string> };
 const NAV: { group: string; items: NavItem[] }[] = [
@@ -64,12 +64,13 @@ const NAV: { group: string; items: NavItem[] }[] = [
 
 function SideNav({ onNav }: { onNav?: () => void }) {
   const { hasAny, roles } = useAuth();
-  const personal=isPersonalAccount(roles);
-  const groups: typeof NAV = personal ? [{group:'My workspace',items:[
-    {to:'/dashboard',label:'Dashboard',icon:LayoutDashboard}, {to:'/ict',label:'Helpdesk',icon:LifeBuoy},
+  const ictWorkspace=isIctOfficerWorkspace(roles);
+  const personal=isPersonalAccount(roles)||ictWorkspace;
+  const groups: typeof NAV = personal ? [{group:ictWorkspace?'ICT workspace':'My workspace',items:[
+    {to:'/dashboard',label:'Dashboard',icon:LayoutDashboard}, {to:'/ict',label:ictWorkspace?'ICT Helpdesk':'Helpdesk',icon:LifeBuoy},
     {to:'/command',label:'Daily Report',icon:FileText}, {to:'/equipment-request',label:'Equipment Request',icon:Boxes},
-    {to:'/supplies',label:'Supply Request',icon:PackageSearch}, {to:'/manual',label:'User Manual',icon:FileText},
-    {to:'/classroom',label:'Class Room',icon:GraduationCap}, {to:'/mail',label:'Official Mail',icon:InboxIcon},
+    {to:'/supplies',label:'Supply Request',icon:PackageSearch}, {to:'/classroom',label:'Class Room',icon:GraduationCap},
+    {to:'/mail',label:'Official Mail',icon:InboxIcon}, {to:'/manual',label:'User Manual',icon:FileText},
   ]}] : NAV;
   return (
     <nav className="flex flex-col gap-6 p-4 text-sm">
