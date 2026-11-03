@@ -59,7 +59,8 @@ it('forwards upward along the reporting chain and approves at the top',async()=>
  await db.query(`select compilation_action($1,'forward','{}')`,[compilationId]);
  const fwd=await db.query<{status:string;recipient_id:string}>('select status,recipient_id from compiled_reports where id=$1',[compilationId]);
  expect(fwd.rows[0]?.status).toBe('Forwarded');
- expect(fwd.rows[0]?.recipient_id).not.toBe(reviewer);
+ expect(fwd.rows[0]?.recipient_id).toBe(deputy);
+ await db.exec(`SET test.uid='${deputy}'`);
  await db.query(`select compilation_action($1,'approve','{}')`,[compilationId]);
  expect((await db.query<{status:string}>('select status from compiled_reports where id=$1',[compilationId])).rows[0]?.status).toBe('Approved');
  const notice=await db.query<{n:number}>(`select count(*)::int n from notifications where user_id='${reviewer}' and title='Compiled report approved'`);
