@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/lib/auth";
+import campusBg from "@/assets/campus-background.jpg";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -34,7 +35,6 @@ function AuthPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
-
 
   useEffect(() => {
     if (session) nav({ to: "/dashboard", replace: true });
@@ -74,10 +74,18 @@ function AuthPage() {
 
   return (
     <div className="min-h-screen grid md:grid-cols-2">
-      <div className="hidden md:flex flex-col items-center justify-center bg-sidebar text-sidebar-foreground p-10 text-center">
-        <Logo className="h-40 w-40 ring-4 ring-gold" />
-        <h2 className="mt-6 text-2xl font-bold">LNPATS ERP</h2>
-        <p className="mt-2 text-sm text-sidebar-foreground/70 max-w-xs">Liberia National Police Academy and Training School</p>
+      <div className="hidden md:flex flex-col items-center justify-center relative overflow-hidden bg-sidebar text-sidebar-foreground p-10 text-center">
+        {/* Campus background with overlay */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${campusBg})` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-sidebar/92 via-sidebar/85 to-sidebar/95 backdrop-brightness-[0.75]" />
+        <div className="relative z-10 flex flex-col items-center">
+          <Logo className="h-40 w-40 ring-4 ring-gold shadow-2xl" />
+          <h2 className="mt-6 text-2xl font-bold text-white drop-shadow">LNPATS ERP</h2>
+          <p className="mt-2 text-sm text-slate-200/85 max-w-xs">Liberia National Police Academy and Training School</p>
+        </div>
       </div>
       <div className="flex items-center justify-center p-6">
         <form onSubmit={submit} className="w-full max-w-sm space-y-4">

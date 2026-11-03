@@ -17,6 +17,8 @@ import { liberiaDate } from "@/lib/time";
 import { useAuth } from "@/lib/auth";
 import { policeRankOptions } from "@/lib/police-ranks";
 import { openOutlookApp } from "@/lib/official-mail";
+import { FileText } from "lucide-react";
+import { PersonnelReportModal } from "@/components/PersonnelReportModal";
 
 export const Route = createFileRoute("/_authenticated/officers/$id")({
   head: () => ({ meta: [{ title: "Officer Profile — LNPATS ERP" }, { name: "description", content: "View an LNPATS officer profile, service details, and identification card." }, { property: "og:title", content: "Officer Profile — LNPATS ERP" }, { property: "og:description", content: "View an LNPATS officer profile, service details, and identification card." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
@@ -34,6 +36,7 @@ function OfficerPage() {
   const { hasAny } = useAuth();
   const qc = useQueryClient();
   const [edit, setEdit] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const { data: o, error } = useQuery({
     queryKey: ["officer", id],
     // sections also points back at officers (section head), so both embeds must name their relation.
@@ -52,6 +55,7 @@ function OfficerPage() {
   if (!o) return <p className="text-muted-foreground">Loading…</p>;
   const canEdit = hasAny(["hr_officer", "commandant"]);
   const canPhoto = hasAny(["hr_admin", "hr_officer"]);
+  const canGenerateReport = hasAny(["hr_admin", "hr_officer", "ict_admin", "system_admin"]);
 
   const save = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -71,6 +75,15 @@ function OfficerPage() {
         subtitle={`${o.service_number} · ${o.position ?? ""}`}
         actions={
           <>
+            {canGenerateReport && (
+              <Button
+                variant="default"
+                className="gap-2 bg-primary text-primary-foreground font-semibold shadow-sm"
+                onClick={() => setReportOpen(true)}
+              >
+                <FileText className="h-4 w-4" /> Generate Report
+              </Button>
+            )}
             <Button variant="outline" onClick={() => window.print()}>Print ID card</Button>
             {canEdit && <Button onClick={() => setEdit(!edit)}>{edit ? "Cancel" : "Edit profile"}</Button>}
           </>
@@ -122,6 +135,10 @@ function OfficerPage() {
           </CardContent>
         </Card>
       </div>
+
+      {reportOpen && (
+        <PersonnelReportModal officerId={id} onClose={() => setReportOpen(false)} />
+      )}
     </div>
   );
 }

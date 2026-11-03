@@ -14,6 +14,8 @@ import { PageHeader, StatusBadge } from "@/components/AppShell";
 import { useAuth } from "@/lib/auth";
 import { exportCsv } from "@/lib/export";
 import { policeRankOptions } from "@/lib/police-ranks";
+import { FileText } from "lucide-react";
+import { PersonnelReportModal } from "@/components/PersonnelReportModal";
 
 export const Route = createFileRoute("/_authenticated/officers/")({
   head: () => ({ meta: [{ title: "Officers — LNPATS ERP" }, { name: "description", content: "Manage LNPATS officer profiles, service numbers, and assignments." }, { property: "og:title", content: "Officers — LNPATS ERP" }, { property: "og:description", content: "Manage LNPATS officer profiles, service numbers, and assignments." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
@@ -25,6 +27,10 @@ function Officers() {
   const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
+  const [reportOfficerId, setReportOfficerId] = useState<string | null>(null);
+
+  const canGenerateReport = hasAny(["hr_admin", "hr_officer", "ict_admin", "system_admin"]);
+
   const { data } = useQuery({
     queryKey: ["officers"],
     queryFn: async () => {
@@ -99,7 +105,17 @@ function Officers() {
       <Input placeholder="Search by name, service number, rank or section…" value={q} onChange={(e) => setQ(e.target.value)} className="max-w-md mb-4" />
       <Card>
         <Table>
-          <TableHeader><TableRow><TableHead>Service #</TableHead><TableHead>Name</TableHead><TableHead>Rank</TableHead><TableHead className="hidden md:table-cell">Section</TableHead><TableHead className="hidden md:table-cell">Position</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Service #</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Rank</TableHead>
+              <TableHead className="hidden md:table-cell">Section</TableHead>
+              <TableHead className="hidden md:table-cell">Position</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
           <TableBody>
             {rows.map((o) => (
               <TableRow key={o.id}>
@@ -109,11 +125,32 @@ function Officers() {
                 <TableCell className="hidden md:table-cell">{o.sections?.name}</TableCell>
                 <TableCell className="hidden md:table-cell">{o.position}</TableCell>
                 <TableCell><StatusBadge value={o.employment_status} /></TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end items-center gap-1">
+                    {canGenerateReport && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 gap-1 text-xs"
+                        onClick={() => setReportOfficerId(o.id)}
+                      >
+                        <FileText className="h-3.5 w-3.5 text-primary" /> Report
+                      </Button>
+                    )}
+                    <Button asChild variant="outline" size="sm" className="h-8 text-xs">
+                      <Link to="/officers/$id" params={{ id: o.id }}>View</Link>
+                    </Button>
+                  </div>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </Card>
+
+      {reportOfficerId && (
+        <PersonnelReportModal officerId={reportOfficerId} onClose={() => setReportOfficerId(null)} />
+      )}
     </div>
   );
 }
