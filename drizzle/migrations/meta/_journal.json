@@ -386,6 +386,13 @@
       "when": 1793712138209,
       "tag": "0054_instructor_role",
       "breakpoints": true
+    },
+    {
+      "idx": 55,
+      "version": "7",
+      "when": 1793712258092,
+      "tag": "0055_instructor_assigned_training",
+      "breakpoints": true
     }
   ]
 }

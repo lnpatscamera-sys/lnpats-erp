@@ -1617,6 +1617,123 @@ export type Database = {
           },
         ]
       }
+      course_lesson_plans: {
+        Row: {
+          content: string
+          course_id: string
+          created_at: string
+          created_by: string
+          id: string
+          lesson_date: string
+          objectives: string
+          title: string
+        }
+        Insert: {
+          content: string
+          course_id: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          lesson_date: string
+          objectives: string
+          title: string
+        }
+        Update: {
+          content?: string
+          course_id?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          lesson_date?: string
+          objectives?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_lesson_plans_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_materials: {
+        Row: {
+          course_id: string
+          created_at: string
+          created_by: string
+          file_path: string
+          id: string
+          title: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          created_by?: string
+          file_path: string
+          id?: string
+          title: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          created_by?: string
+          file_path?: string
+          id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_materials_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_sessions: {
+        Row: {
+          course_id: string
+          created_at: string
+          created_by: string
+          ends_at: string
+          id: string
+          location: string
+          starts_at: string
+          title: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          created_by?: string
+          ends_at: string
+          id?: string
+          location: string
+          starts_at: string
+          title: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          created_by?: string
+          ends_at?: string
+          id?: string
+          location?: string
+          starts_at?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_sessions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           course_code: string | null
@@ -6917,6 +7034,14 @@ export type Database = {
       ict_file_access: { Args: { _path: string }; Returns: boolean }
       ict_staff: { Args: never; Returns: boolean }
       ict_supervisor: { Args: { _officer: string }; Returns: boolean }
+      instructor_course_access: { Args: { _course: string }; Returns: boolean }
+      instructor_material_reader: { Args: { _path: string }; Returns: boolean }
+      instructor_roster: { Args: never; Returns: Json }
+      instructor_student_access: {
+        Args: { _cadet: string; _course: string }
+        Returns: boolean
+      }
+      instructor_workspace: { Args: never; Returns: boolean }
       leave_stage_role: {
         Args: { _stage: number }
         Returns: Database["public"]["Enums"]["app_role"][]
