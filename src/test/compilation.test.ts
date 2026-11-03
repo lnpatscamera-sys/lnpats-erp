@@ -15,7 +15,7 @@ beforeAll(async()=>{
  CREATE FUNCTION officer_personal_only() RETURNS boolean LANGUAGE sql AS $$ SELECT false $$;
  CREATE TABLE offices(id uuid PRIMARY KEY,name text); CREATE TABLE sections(id uuid PRIMARY KEY,name text,office_id uuid,section_head uuid);
  CREATE TABLE officers(id uuid PRIMARY KEY,full_name text,employee_number text,user_id uuid,office_id uuid,section_id uuid,supervisor_id uuid,employment_status text);
- CREATE TABLE notifications(id uuid DEFAULT gen_random_uuid(),user_id uuid,title text,body text,event_key text,UNIQUE(user_id,event_key));
+ CREATE TABLE notifications(id uuid DEFAULT gen_random_uuid(),user_id uuid,title text,body text);
  CREATE TABLE storage.objects(name text,bucket_id text);
  CREATE FUNCTION audit_trigger() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RETURN coalesce(NEW,OLD); END $$;
  INSERT INTO offices VALUES('${office}','Test office'); INSERT INTO sections VALUES('${section}','Test section','${office}','${boss}');
