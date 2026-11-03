@@ -1,3 +1,4 @@
+import { idLabel } from '@/lib/hr-enrollment';
 import { QRCodeSVG } from 'qrcode.react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -21,7 +22,7 @@ export function StaffIdCard({ e }: P) {
         <div className="text-[7px] space-y-[1px] min-w-0">
           <div className="font-bold text-[9px] leading-tight">{e.full_name}</div>
           <div><span className="text-muted-foreground">Rank:</span> {e.rank}</div>
-          <div><span className="text-muted-foreground">LNP ID:</span> {e.service_number}</div>
+          <div><span className="text-muted-foreground">{idLabel(e.personnel_category)}:</span> {e.service_number}</div>
           <div><span className="text-muted-foreground">Staff File Number:</span> {e.form_number ?? '—'}</div>
           <div className="truncate"><span className="text-muted-foreground">Dept:</span> {e.department || '—'}</div>
           <div><span className="text-muted-foreground">Blood group:</span> {e.blood_group || '—'}</div>

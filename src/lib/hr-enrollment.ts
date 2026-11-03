@@ -74,3 +74,14 @@ export function photoError(file: { type: string; size: number; name?: string }) 
   if (file.size > PHOTO_MAX_BYTES) return 'Photo must be 5 MB or smaller.';
   return null;
 }
+
+/** ID label shown for the stored service_number, based on personnel category. */
+export function idLabel(category?: string | null): string {
+  switch (category) {
+    case 'Newly Recruited Officer': case 'Recruit Officer':
+    case 'In-Service Officer': case 'Volunteer': case 'Volunteer Officer': return 'LNP ID Number';
+    case 'Civilian Staff': return 'CIV ID Number';
+    case 'Contract Staff': case 'Contractor': return 'Contractor ID Number';
+    default: return 'ID Number';
+  }
+}
