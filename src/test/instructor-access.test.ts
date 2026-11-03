@@ -8,7 +8,7 @@ const me='00000000-0000-0000-0000-000000000001',boss='00000000-0000-0000-0000-00
 beforeAll(async()=>{
  await db.exec(`CREATE ROLE authenticated; CREATE ROLE anon; CREATE ROLE service_role; CREATE SCHEMA auth; CREATE SCHEMA storage;
  CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql AS $$SELECT nullif(current_setting('test.uid',true),'')::uuid$$;
- CREATE TYPE app_role AS ENUM('instructor','dc_academy','system_admin','officer','section_head','assistant_commissioner','deputy_commandant','dc_admin','commandant','procurement_admin','hr_admin');
+ CREATE TYPE app_role AS ENUM('instructor','chief_instructor','dc_academy','system_admin','officer','section_head','assistant_commissioner','deputy_commandant','dc_admin','commandant','procurement_admin','hr_admin');
  CREATE TABLE user_roles(user_id uuid,role app_role); CREATE TABLE profiles(id uuid,full_name text);
  CREATE FUNCTION has_role(uuid,app_role) RETURNS boolean LANGUAGE sql STABLE AS $$SELECT EXISTS(SELECT 1 FROM user_roles WHERE user_id=$1 AND role=$2)$$;
  CREATE FUNCTION has_any_role(uuid,app_role[]) RETURNS boolean LANGUAGE sql STABLE AS $$SELECT EXISTS(SELECT 1 FROM user_roles WHERE user_id=$1 AND (role='system_admin' OR role=ANY($2)))$$;
