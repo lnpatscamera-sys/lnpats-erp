@@ -26,6 +26,8 @@ export const ROLE_LABELS: Record<AppRole, string> = {
   system_admin: "System Administrator",
   facility_manager: "Facility Manager",
   iss_officer: "ISS Officer",
+  ict_officer: "ICT Officer",
+  media_officer: "Media Officer",
 };
 
 type AuthCtx = { session: Session | null; roles: AppRole[]; loading: boolean; hasAny: (r: AppRole[]) => boolean };
