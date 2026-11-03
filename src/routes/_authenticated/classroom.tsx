@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_authenticated/classroom")({
 
 function label(details: unknown) {
   const d = (details && typeof details === "object" ? details : {}) as Record<string, unknown>;
-  return String(d.course ?? d.title ?? d.program ?? d.name ?? d.type ?? "Training record");
+  return String(d['course'] ?? d['title'] ?? d['program'] ?? d['name'] ?? d['type'] ?? "Training record");
 }
 
 function Classroom() {
