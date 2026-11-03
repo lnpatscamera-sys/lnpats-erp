@@ -15,10 +15,12 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedAssetsRouteImport } from './routes/_authenticated/assets'
 import { Route as AuthenticatedAuditRouteImport } from './routes/_authenticated/audit'
+import { Route as AuthenticatedClassroomRouteImport } from './routes/_authenticated/classroom'
 import { Route as AuthenticatedCommandRouteImport } from './routes/_authenticated/command'
 import { Route as AuthenticatedCommandInventoryRouteImport } from './routes/_authenticated/command-inventory'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDocumentsRouteImport } from './routes/_authenticated/documents'
+import { Route as AuthenticatedEquipmentRequestRouteImport } from './routes/_authenticated/equipment-request'
 import { Route as AuthenticatedEquipmentRequestsRouteImport } from './routes/_authenticated/equipment-requests'
 import { Route as AuthenticatedFacilitiesRouteImport } from './routes/_authenticated/facilities'
 import { Route as AuthenticatedFinanceRouteImport } from './routes/_authenticated/finance'
@@ -78,6 +80,11 @@ const AuthenticatedAuditRoute = AuthenticatedAuditRouteImport.update({
   path: '/audit',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedClassroomRoute = AuthenticatedClassroomRouteImport.update({
+  id: '/classroom',
+  path: '/classroom',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCommandRoute = AuthenticatedCommandRouteImport.update({
   id: '/command',
   path: '/command',
@@ -99,6 +106,12 @@ const AuthenticatedDocumentsRoute = AuthenticatedDocumentsRouteImport.update({
   path: '/documents',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedEquipmentRequestRoute =
+  AuthenticatedEquipmentRequestRouteImport.update({
+    id: '/equipment-request',
+    path: '/equipment-request',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedEquipmentRequestsRoute =
   AuthenticatedEquipmentRequestsRouteImport.update({
     id: '/equipment-requests',
@@ -262,10 +275,12 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/assets': typeof AuthenticatedAssetsRoute
   '/audit': typeof AuthenticatedAuditRoute
+  '/classroom': typeof AuthenticatedClassroomRoute
   '/command': typeof AuthenticatedCommandRoute
   '/command-inventory': typeof AuthenticatedCommandInventoryRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
+  '/equipment-request': typeof AuthenticatedEquipmentRequestRoute
   '/equipment-requests': typeof AuthenticatedEquipmentRequestsRoute
   '/facilities': typeof AuthenticatedFacilitiesRoute
   '/finance': typeof AuthenticatedFinanceRoute
@@ -302,10 +317,12 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/assets': typeof AuthenticatedAssetsRoute
   '/audit': typeof AuthenticatedAuditRoute
+  '/classroom': typeof AuthenticatedClassroomRoute
   '/command': typeof AuthenticatedCommandRoute
   '/command-inventory': typeof AuthenticatedCommandInventoryRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
+  '/equipment-request': typeof AuthenticatedEquipmentRequestRoute
   '/equipment-requests': typeof AuthenticatedEquipmentRequestsRoute
   '/facilities': typeof AuthenticatedFacilitiesRoute
   '/finance': typeof AuthenticatedFinanceRoute
@@ -344,10 +361,12 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/assets': typeof AuthenticatedAssetsRoute
   '/_authenticated/audit': typeof AuthenticatedAuditRoute
+  '/_authenticated/classroom': typeof AuthenticatedClassroomRoute
   '/_authenticated/command': typeof AuthenticatedCommandRoute
   '/_authenticated/command-inventory': typeof AuthenticatedCommandInventoryRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/documents': typeof AuthenticatedDocumentsRoute
+  '/_authenticated/equipment-request': typeof AuthenticatedEquipmentRequestRoute
   '/_authenticated/equipment-requests': typeof AuthenticatedEquipmentRequestsRoute
   '/_authenticated/facilities': typeof AuthenticatedFacilitiesRoute
   '/_authenticated/finance': typeof AuthenticatedFinanceRoute
@@ -386,10 +405,12 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/assets'
     | '/audit'
+    | '/classroom'
     | '/command'
     | '/command-inventory'
     | '/dashboard'
     | '/documents'
+    | '/equipment-request'
     | '/equipment-requests'
     | '/facilities'
     | '/finance'
@@ -426,10 +447,12 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/assets'
     | '/audit'
+    | '/classroom'
     | '/command'
     | '/command-inventory'
     | '/dashboard'
     | '/documents'
+    | '/equipment-request'
     | '/equipment-requests'
     | '/facilities'
     | '/finance'
@@ -467,10 +490,12 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/assets'
     | '/_authenticated/audit'
+    | '/_authenticated/classroom'
     | '/_authenticated/command'
     | '/_authenticated/command-inventory'
     | '/_authenticated/dashboard'
     | '/_authenticated/documents'
+    | '/_authenticated/equipment-request'
     | '/_authenticated/equipment-requests'
     | '/_authenticated/facilities'
     | '/_authenticated/finance'
@@ -555,6 +580,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAuditRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/classroom': {
+      id: '/_authenticated/classroom'
+      path: '/classroom'
+      fullPath: '/classroom'
+      preLoaderRoute: typeof AuthenticatedClassroomRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/command': {
       id: '/_authenticated/command'
       path: '/command'
@@ -581,6 +613,13 @@ declare module '@tanstack/react-router' {
       path: '/documents'
       fullPath: '/documents'
       preLoaderRoute: typeof AuthenticatedDocumentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/equipment-request': {
+      id: '/_authenticated/equipment-request'
+      path: '/equipment-request'
+      fullPath: '/equipment-request'
+      preLoaderRoute: typeof AuthenticatedEquipmentRequestRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/equipment-requests': {
@@ -792,10 +831,12 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAssetsRoute: typeof AuthenticatedAssetsRoute
   AuthenticatedAuditRoute: typeof AuthenticatedAuditRoute
+  AuthenticatedClassroomRoute: typeof AuthenticatedClassroomRoute
   AuthenticatedCommandRoute: typeof AuthenticatedCommandRoute
   AuthenticatedCommandInventoryRoute: typeof AuthenticatedCommandInventoryRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDocumentsRoute: typeof AuthenticatedDocumentsRoute
+  AuthenticatedEquipmentRequestRoute: typeof AuthenticatedEquipmentRequestRoute
   AuthenticatedEquipmentRequestsRoute: typeof AuthenticatedEquipmentRequestsRoute
   AuthenticatedFacilitiesRoute: typeof AuthenticatedFacilitiesRoute
   AuthenticatedFinanceRoute: typeof AuthenticatedFinanceRoute
@@ -828,10 +869,12 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAssetsRoute: AuthenticatedAssetsRoute,
   AuthenticatedAuditRoute: AuthenticatedAuditRoute,
+  AuthenticatedClassroomRoute: AuthenticatedClassroomRoute,
   AuthenticatedCommandRoute: AuthenticatedCommandRoute,
   AuthenticatedCommandInventoryRoute: AuthenticatedCommandInventoryRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDocumentsRoute: AuthenticatedDocumentsRoute,
+  AuthenticatedEquipmentRequestRoute: AuthenticatedEquipmentRequestRoute,
   AuthenticatedEquipmentRequestsRoute: AuthenticatedEquipmentRequestsRoute,
   AuthenticatedFacilitiesRoute: AuthenticatedFacilitiesRoute,
   AuthenticatedFinanceRoute: AuthenticatedFinanceRoute,

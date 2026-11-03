@@ -24,7 +24,7 @@ beforeAll(async()=>{
  await db.exec(`set role authenticated;set test.uid='${me}';`);
 },30000);
 afterAll(()=>db.close());
-it('allows precisely seven Officer pages',()=>{expect(OFFICER_PATHS).toEqual(['/dashboard','/command','/ict','/supplies','/manual','/mail','/my-activities']);for(const path of OFFICER_PATHS)expect(canOpenOfficerPath(['officer'],path)).toBe(true)});
+it('allows precisely the Officer workspace pages',()=>{expect(OFFICER_PATHS).toEqual(['/dashboard','/ict','/command','/equipment-request','/supplies','/manual','/classroom','/mail','/my-activities']);for(const path of OFFICER_PATHS)expect(canOpenOfficerPath(['officer'],path)).toBe(true)});
 it.each(['/hr','/finance','/procurement','/training','/audit','/officers','/organization','/security','/admin/users','/officers/other','/search','/inventory'])('blocks Officer direct URL %s',path=>expect(canOpenOfficerPath(['officer'],path)).toBe(false));
 it('retains privileges for explicitly assigned additional roles',()=>{expect(isPersonalAccount(['officer','hr_admin'])).toBe(false);expect(canOpenOfficerPath(['officer','system_admin'],'/hr')).toBe(true)});
 it.each(['supply_requests','daily_reports','tickets','officers'])('reads only own %s despite a permissive read policy',async table=>{const r=await db.query<{id:string}>(`select id from ${table}`);expect(r.rows.map(x=>x.id)).toEqual([me])});
