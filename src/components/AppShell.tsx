@@ -14,7 +14,7 @@ import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { OfficialMailNavLink } from "./OfficialMail";
-import { canOpenOfficerPath, isPersonalAccount } from "@/lib/officer-access";
+import { canOpenOfficerPath, isIctOfficerWorkspace, isPersonalAccount, isInstructorWorkspace } from "@/lib/officer-access";
 
 type NavItem = { to: string; label: string; icon: typeof Users; params?: Record<string, string> };
 const NAV: { group: string; items: NavItem[] }[] = [
@@ -64,12 +64,23 @@ const NAV: { group: string; items: NavItem[] }[] = [
 
 function SideNav({ onNav }: { onNav?: () => void }) {
   const { hasAny, roles } = useAuth();
-  const personal=isPersonalAccount(roles);
-  const groups: typeof NAV = personal ? [{group:'My workspace',items:[
-    {to:'/dashboard',label:'Dashboard',icon:LayoutDashboard}, {to:'/command',label:'Daily Reports',icon:FileText},
-    {to:'/ict',label:'ICT Helpdesk',icon:LifeBuoy}, {to:'/supplies',label:'Request for Supply',icon:PackageSearch},
-    {to:'/manual',label:'User Manual',icon:FileText}, {to:'/mail',label:'Official Email',icon:InboxIcon},
-    {to:'/my-activities',label:'My Activities',icon:ScrollText},
+  const ictWorkspace=isIctOfficerWorkspace(roles);
+  const instructorWorkspace=isInstructorWorkspace(roles);
+  const personal=isPersonalAccount(roles)||ictWorkspace;
+  const groups: typeof NAV = instructorWorkspace ? [{group:'Instructor workspace',items:[
+    {to:'/dashboard',label:'Dashboard',icon:LayoutDashboard}, {to:'/command',label:'Daily Report',icon:FileText},
+    {to:'/training',label:'Training Management',icon:GraduationCap}, {to:'/course-materials',label:'Course Materials',icon:FileText},
+    {to:'/lesson-plans',label:'Lesson Plans',icon:FileText}, {to:'/training-schedule',label:'Training Schedule',icon:CalendarDays},
+    {to:'/class-attendance',label:'Class Attendance',icon:Users}, {to:'/examinations',label:'Examination & Assessment',icon:GraduationCap},
+    {to:'/student-performance',label:'Student Performance Records',icon:ScrollText}, {to:'/manual',label:'User Manual',icon:FileText},
+    {to:'/mail',label:'Official Mail',icon:InboxIcon}, {to:'/notifications',label:'Notifications',icon:Bell},
+    {to:'/ict',label:'ICT Helpdesk',icon:LifeBuoy}, {to:'/equipment-request',label:'Equipment Request',icon:Boxes},
+    {to:'/supplies',label:'Supply Request',icon:PackageSearch},
+  ]}] : personal ? [{group:ictWorkspace?'ICT workspace':'My workspace',items:[
+    {to:'/dashboard',label:'Dashboard',icon:LayoutDashboard}, {to:'/ict',label:ictWorkspace?'ICT Helpdesk':'Helpdesk',icon:LifeBuoy},
+    {to:'/command',label:'Daily Report',icon:FileText}, {to:'/equipment-request',label:'Equipment Request',icon:Boxes},
+    {to:'/supplies',label:'Supply Request',icon:PackageSearch}, {to:'/classroom',label:'Class Room',icon:GraduationCap},
+    {to:'/mail',label:'Official Mail',icon:InboxIcon}, {to:'/manual',label:'User Manual',icon:FileText},
   ]}] : NAV;
   return (
     <nav className="flex flex-col gap-6 p-4 text-sm">

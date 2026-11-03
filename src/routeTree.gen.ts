@@ -15,11 +15,16 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedAssetsRouteImport } from './routes/_authenticated/assets'
 import { Route as AuthenticatedAuditRouteImport } from './routes/_authenticated/audit'
+import { Route as AuthenticatedClassAttendanceRouteImport } from './routes/_authenticated/class-attendance'
+import { Route as AuthenticatedClassroomRouteImport } from './routes/_authenticated/classroom'
 import { Route as AuthenticatedCommandRouteImport } from './routes/_authenticated/command'
 import { Route as AuthenticatedCommandInventoryRouteImport } from './routes/_authenticated/command-inventory'
+import { Route as AuthenticatedCourseMaterialsRouteImport } from './routes/_authenticated/course-materials'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDocumentsRouteImport } from './routes/_authenticated/documents'
+import { Route as AuthenticatedEquipmentRequestRouteImport } from './routes/_authenticated/equipment-request'
 import { Route as AuthenticatedEquipmentRequestsRouteImport } from './routes/_authenticated/equipment-requests'
+import { Route as AuthenticatedExaminationsRouteImport } from './routes/_authenticated/examinations'
 import { Route as AuthenticatedFacilitiesRouteImport } from './routes/_authenticated/facilities'
 import { Route as AuthenticatedFinanceRouteImport } from './routes/_authenticated/finance'
 import { Route as AuthenticatedHrRouteImport } from './routes/_authenticated/hr'
@@ -27,6 +32,7 @@ import { Route as AuthenticatedIctRouteImport } from './routes/_authenticated/ic
 import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated/inventory'
 import { Route as AuthenticatedIssuesRouteImport } from './routes/_authenticated/issues'
 import { Route as AuthenticatedLeaveRouteImport } from './routes/_authenticated/leave'
+import { Route as AuthenticatedLessonPlansRouteImport } from './routes/_authenticated/lesson-plans'
 import { Route as AuthenticatedMailRouteImport } from './routes/_authenticated/mail'
 import { Route as AuthenticatedManualRouteImport } from './routes/_authenticated/manual'
 import { Route as AuthenticatedMyActivitiesRouteImport } from './routes/_authenticated/my-activities'
@@ -38,9 +44,11 @@ import { Route as AuthenticatedRegistryRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedSearchRouteImport } from './routes/_authenticated/search'
 import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticated/security'
 import { Route as AuthenticatedStockMovementsRouteImport } from './routes/_authenticated/stock-movements'
+import { Route as AuthenticatedStudentPerformanceRouteImport } from './routes/_authenticated/student-performance'
 import { Route as AuthenticatedSuppliersRouteImport } from './routes/_authenticated/suppliers'
 import { Route as AuthenticatedSuppliesRouteImport } from './routes/_authenticated/supplies'
 import { Route as AuthenticatedTrainingRouteImport } from './routes/_authenticated/training'
+import { Route as AuthenticatedTrainingScheduleRouteImport } from './routes/_authenticated/training-schedule'
 import { Route as AuthenticatedVehicleBookingsRouteImport } from './routes/_authenticated/vehicle-bookings'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedModulesModuleRouteImport } from './routes/_authenticated/modules.$module'
@@ -78,6 +86,17 @@ const AuthenticatedAuditRoute = AuthenticatedAuditRouteImport.update({
   path: '/audit',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedClassAttendanceRoute =
+  AuthenticatedClassAttendanceRouteImport.update({
+    id: '/class-attendance',
+    path: '/class-attendance',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedClassroomRoute = AuthenticatedClassroomRouteImport.update({
+  id: '/classroom',
+  path: '/classroom',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCommandRoute = AuthenticatedCommandRouteImport.update({
   id: '/command',
   path: '/command',
@@ -87,6 +106,12 @@ const AuthenticatedCommandInventoryRoute =
   AuthenticatedCommandInventoryRouteImport.update({
     id: '/command-inventory',
     path: '/command-inventory',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCourseMaterialsRoute =
+  AuthenticatedCourseMaterialsRouteImport.update({
+    id: '/course-materials',
+    path: '/course-materials',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -99,10 +124,22 @@ const AuthenticatedDocumentsRoute = AuthenticatedDocumentsRouteImport.update({
   path: '/documents',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedEquipmentRequestRoute =
+  AuthenticatedEquipmentRequestRouteImport.update({
+    id: '/equipment-request',
+    path: '/equipment-request',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedEquipmentRequestsRoute =
   AuthenticatedEquipmentRequestsRouteImport.update({
     id: '/equipment-requests',
     path: '/equipment-requests',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedExaminationsRoute =
+  AuthenticatedExaminationsRouteImport.update({
+    id: '/examinations',
+    path: '/examinations',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedFacilitiesRoute = AuthenticatedFacilitiesRouteImport.update({
@@ -140,6 +177,12 @@ const AuthenticatedLeaveRoute = AuthenticatedLeaveRouteImport.update({
   path: '/leave',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedLessonPlansRoute =
+  AuthenticatedLessonPlansRouteImport.update({
+    id: '/lesson-plans',
+    path: '/lesson-plans',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMailRoute = AuthenticatedMailRouteImport.update({
   id: '/mail',
   path: '/mail',
@@ -200,6 +243,12 @@ const AuthenticatedStockMovementsRoute =
     path: '/stock-movements',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedStudentPerformanceRoute =
+  AuthenticatedStudentPerformanceRouteImport.update({
+    id: '/student-performance',
+    path: '/student-performance',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSuppliersRoute = AuthenticatedSuppliersRouteImport.update({
   id: '/suppliers',
   path: '/suppliers',
@@ -215,6 +264,12 @@ const AuthenticatedTrainingRoute = AuthenticatedTrainingRouteImport.update({
   path: '/training',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTrainingScheduleRoute =
+  AuthenticatedTrainingScheduleRouteImport.update({
+    id: '/training-schedule',
+    path: '/training-schedule',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedVehicleBookingsRoute =
   AuthenticatedVehicleBookingsRouteImport.update({
     id: '/vehicle-bookings',
@@ -262,11 +317,16 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/assets': typeof AuthenticatedAssetsRoute
   '/audit': typeof AuthenticatedAuditRoute
+  '/class-attendance': typeof AuthenticatedClassAttendanceRoute
+  '/classroom': typeof AuthenticatedClassroomRoute
   '/command': typeof AuthenticatedCommandRoute
   '/command-inventory': typeof AuthenticatedCommandInventoryRoute
+  '/course-materials': typeof AuthenticatedCourseMaterialsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
+  '/equipment-request': typeof AuthenticatedEquipmentRequestRoute
   '/equipment-requests': typeof AuthenticatedEquipmentRequestsRoute
+  '/examinations': typeof AuthenticatedExaminationsRoute
   '/facilities': typeof AuthenticatedFacilitiesRoute
   '/finance': typeof AuthenticatedFinanceRoute
   '/hr': typeof AuthenticatedHrRoute
@@ -274,6 +334,7 @@ export interface FileRoutesByFullPath {
   '/inventory': typeof AuthenticatedInventoryRoute
   '/issues': typeof AuthenticatedIssuesRoute
   '/leave': typeof AuthenticatedLeaveRoute
+  '/lesson-plans': typeof AuthenticatedLessonPlansRoute
   '/mail': typeof AuthenticatedMailRoute
   '/manual': typeof AuthenticatedManualRoute
   '/my-activities': typeof AuthenticatedMyActivitiesRoute
@@ -285,9 +346,11 @@ export interface FileRoutesByFullPath {
   '/search': typeof AuthenticatedSearchRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/stock-movements': typeof AuthenticatedStockMovementsRoute
+  '/student-performance': typeof AuthenticatedStudentPerformanceRoute
   '/suppliers': typeof AuthenticatedSuppliersRoute
   '/supplies': typeof AuthenticatedSuppliesRoute
   '/training': typeof AuthenticatedTrainingRoute
+  '/training-schedule': typeof AuthenticatedTrainingScheduleRoute
   '/vehicle-bookings': typeof AuthenticatedVehicleBookingsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/modules/$module': typeof AuthenticatedModulesModuleRoute
@@ -302,11 +365,16 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/assets': typeof AuthenticatedAssetsRoute
   '/audit': typeof AuthenticatedAuditRoute
+  '/class-attendance': typeof AuthenticatedClassAttendanceRoute
+  '/classroom': typeof AuthenticatedClassroomRoute
   '/command': typeof AuthenticatedCommandRoute
   '/command-inventory': typeof AuthenticatedCommandInventoryRoute
+  '/course-materials': typeof AuthenticatedCourseMaterialsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
+  '/equipment-request': typeof AuthenticatedEquipmentRequestRoute
   '/equipment-requests': typeof AuthenticatedEquipmentRequestsRoute
+  '/examinations': typeof AuthenticatedExaminationsRoute
   '/facilities': typeof AuthenticatedFacilitiesRoute
   '/finance': typeof AuthenticatedFinanceRoute
   '/hr': typeof AuthenticatedHrRoute
@@ -314,6 +382,7 @@ export interface FileRoutesByTo {
   '/inventory': typeof AuthenticatedInventoryRoute
   '/issues': typeof AuthenticatedIssuesRoute
   '/leave': typeof AuthenticatedLeaveRoute
+  '/lesson-plans': typeof AuthenticatedLessonPlansRoute
   '/mail': typeof AuthenticatedMailRoute
   '/manual': typeof AuthenticatedManualRoute
   '/my-activities': typeof AuthenticatedMyActivitiesRoute
@@ -325,9 +394,11 @@ export interface FileRoutesByTo {
   '/search': typeof AuthenticatedSearchRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/stock-movements': typeof AuthenticatedStockMovementsRoute
+  '/student-performance': typeof AuthenticatedStudentPerformanceRoute
   '/suppliers': typeof AuthenticatedSuppliersRoute
   '/supplies': typeof AuthenticatedSuppliesRoute
   '/training': typeof AuthenticatedTrainingRoute
+  '/training-schedule': typeof AuthenticatedTrainingScheduleRoute
   '/vehicle-bookings': typeof AuthenticatedVehicleBookingsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/modules/$module': typeof AuthenticatedModulesModuleRoute
@@ -344,11 +415,16 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/assets': typeof AuthenticatedAssetsRoute
   '/_authenticated/audit': typeof AuthenticatedAuditRoute
+  '/_authenticated/class-attendance': typeof AuthenticatedClassAttendanceRoute
+  '/_authenticated/classroom': typeof AuthenticatedClassroomRoute
   '/_authenticated/command': typeof AuthenticatedCommandRoute
   '/_authenticated/command-inventory': typeof AuthenticatedCommandInventoryRoute
+  '/_authenticated/course-materials': typeof AuthenticatedCourseMaterialsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/documents': typeof AuthenticatedDocumentsRoute
+  '/_authenticated/equipment-request': typeof AuthenticatedEquipmentRequestRoute
   '/_authenticated/equipment-requests': typeof AuthenticatedEquipmentRequestsRoute
+  '/_authenticated/examinations': typeof AuthenticatedExaminationsRoute
   '/_authenticated/facilities': typeof AuthenticatedFacilitiesRoute
   '/_authenticated/finance': typeof AuthenticatedFinanceRoute
   '/_authenticated/hr': typeof AuthenticatedHrRoute
@@ -356,6 +432,7 @@ export interface FileRoutesById {
   '/_authenticated/inventory': typeof AuthenticatedInventoryRoute
   '/_authenticated/issues': typeof AuthenticatedIssuesRoute
   '/_authenticated/leave': typeof AuthenticatedLeaveRoute
+  '/_authenticated/lesson-plans': typeof AuthenticatedLessonPlansRoute
   '/_authenticated/mail': typeof AuthenticatedMailRoute
   '/_authenticated/manual': typeof AuthenticatedManualRoute
   '/_authenticated/my-activities': typeof AuthenticatedMyActivitiesRoute
@@ -367,9 +444,11 @@ export interface FileRoutesById {
   '/_authenticated/search': typeof AuthenticatedSearchRoute
   '/_authenticated/security': typeof AuthenticatedSecurityRoute
   '/_authenticated/stock-movements': typeof AuthenticatedStockMovementsRoute
+  '/_authenticated/student-performance': typeof AuthenticatedStudentPerformanceRoute
   '/_authenticated/suppliers': typeof AuthenticatedSuppliersRoute
   '/_authenticated/supplies': typeof AuthenticatedSuppliesRoute
   '/_authenticated/training': typeof AuthenticatedTrainingRoute
+  '/_authenticated/training-schedule': typeof AuthenticatedTrainingScheduleRoute
   '/_authenticated/vehicle-bookings': typeof AuthenticatedVehicleBookingsRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/modules/$module': typeof AuthenticatedModulesModuleRoute
@@ -386,11 +465,16 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/assets'
     | '/audit'
+    | '/class-attendance'
+    | '/classroom'
     | '/command'
     | '/command-inventory'
+    | '/course-materials'
     | '/dashboard'
     | '/documents'
+    | '/equipment-request'
     | '/equipment-requests'
+    | '/examinations'
     | '/facilities'
     | '/finance'
     | '/hr'
@@ -398,6 +482,7 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/issues'
     | '/leave'
+    | '/lesson-plans'
     | '/mail'
     | '/manual'
     | '/my-activities'
@@ -409,9 +494,11 @@ export interface FileRouteTypes {
     | '/search'
     | '/security'
     | '/stock-movements'
+    | '/student-performance'
     | '/suppliers'
     | '/supplies'
     | '/training'
+    | '/training-schedule'
     | '/vehicle-bookings'
     | '/admin/users'
     | '/modules/$module'
@@ -426,11 +513,16 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/assets'
     | '/audit'
+    | '/class-attendance'
+    | '/classroom'
     | '/command'
     | '/command-inventory'
+    | '/course-materials'
     | '/dashboard'
     | '/documents'
+    | '/equipment-request'
     | '/equipment-requests'
+    | '/examinations'
     | '/facilities'
     | '/finance'
     | '/hr'
@@ -438,6 +530,7 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/issues'
     | '/leave'
+    | '/lesson-plans'
     | '/mail'
     | '/manual'
     | '/my-activities'
@@ -449,9 +542,11 @@ export interface FileRouteTypes {
     | '/search'
     | '/security'
     | '/stock-movements'
+    | '/student-performance'
     | '/suppliers'
     | '/supplies'
     | '/training'
+    | '/training-schedule'
     | '/vehicle-bookings'
     | '/admin/users'
     | '/modules/$module'
@@ -467,11 +562,16 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/assets'
     | '/_authenticated/audit'
+    | '/_authenticated/class-attendance'
+    | '/_authenticated/classroom'
     | '/_authenticated/command'
     | '/_authenticated/command-inventory'
+    | '/_authenticated/course-materials'
     | '/_authenticated/dashboard'
     | '/_authenticated/documents'
+    | '/_authenticated/equipment-request'
     | '/_authenticated/equipment-requests'
+    | '/_authenticated/examinations'
     | '/_authenticated/facilities'
     | '/_authenticated/finance'
     | '/_authenticated/hr'
@@ -479,6 +579,7 @@ export interface FileRouteTypes {
     | '/_authenticated/inventory'
     | '/_authenticated/issues'
     | '/_authenticated/leave'
+    | '/_authenticated/lesson-plans'
     | '/_authenticated/mail'
     | '/_authenticated/manual'
     | '/_authenticated/my-activities'
@@ -490,9 +591,11 @@ export interface FileRouteTypes {
     | '/_authenticated/search'
     | '/_authenticated/security'
     | '/_authenticated/stock-movements'
+    | '/_authenticated/student-performance'
     | '/_authenticated/suppliers'
     | '/_authenticated/supplies'
     | '/_authenticated/training'
+    | '/_authenticated/training-schedule'
     | '/_authenticated/vehicle-bookings'
     | '/_authenticated/admin/users'
     | '/_authenticated/modules/$module'
@@ -555,6 +658,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAuditRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/class-attendance': {
+      id: '/_authenticated/class-attendance'
+      path: '/class-attendance'
+      fullPath: '/class-attendance'
+      preLoaderRoute: typeof AuthenticatedClassAttendanceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/classroom': {
+      id: '/_authenticated/classroom'
+      path: '/classroom'
+      fullPath: '/classroom'
+      preLoaderRoute: typeof AuthenticatedClassroomRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/command': {
       id: '/_authenticated/command'
       path: '/command'
@@ -567,6 +684,13 @@ declare module '@tanstack/react-router' {
       path: '/command-inventory'
       fullPath: '/command-inventory'
       preLoaderRoute: typeof AuthenticatedCommandInventoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/course-materials': {
+      id: '/_authenticated/course-materials'
+      path: '/course-materials'
+      fullPath: '/course-materials'
+      preLoaderRoute: typeof AuthenticatedCourseMaterialsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -583,11 +707,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDocumentsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/equipment-request': {
+      id: '/_authenticated/equipment-request'
+      path: '/equipment-request'
+      fullPath: '/equipment-request'
+      preLoaderRoute: typeof AuthenticatedEquipmentRequestRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/equipment-requests': {
       id: '/_authenticated/equipment-requests'
       path: '/equipment-requests'
       fullPath: '/equipment-requests'
       preLoaderRoute: typeof AuthenticatedEquipmentRequestsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/examinations': {
+      id: '/_authenticated/examinations'
+      path: '/examinations'
+      fullPath: '/examinations'
+      preLoaderRoute: typeof AuthenticatedExaminationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/facilities': {
@@ -637,6 +775,13 @@ declare module '@tanstack/react-router' {
       path: '/leave'
       fullPath: '/leave'
       preLoaderRoute: typeof AuthenticatedLeaveRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/lesson-plans': {
+      id: '/_authenticated/lesson-plans'
+      path: '/lesson-plans'
+      fullPath: '/lesson-plans'
+      preLoaderRoute: typeof AuthenticatedLessonPlansRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/mail': {
@@ -716,6 +861,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStockMovementsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/student-performance': {
+      id: '/_authenticated/student-performance'
+      path: '/student-performance'
+      fullPath: '/student-performance'
+      preLoaderRoute: typeof AuthenticatedStudentPerformanceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/suppliers': {
       id: '/_authenticated/suppliers'
       path: '/suppliers'
@@ -735,6 +887,13 @@ declare module '@tanstack/react-router' {
       path: '/training'
       fullPath: '/training'
       preLoaderRoute: typeof AuthenticatedTrainingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/training-schedule': {
+      id: '/_authenticated/training-schedule'
+      path: '/training-schedule'
+      fullPath: '/training-schedule'
+      preLoaderRoute: typeof AuthenticatedTrainingScheduleRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/vehicle-bookings': {
@@ -792,11 +951,16 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAssetsRoute: typeof AuthenticatedAssetsRoute
   AuthenticatedAuditRoute: typeof AuthenticatedAuditRoute
+  AuthenticatedClassAttendanceRoute: typeof AuthenticatedClassAttendanceRoute
+  AuthenticatedClassroomRoute: typeof AuthenticatedClassroomRoute
   AuthenticatedCommandRoute: typeof AuthenticatedCommandRoute
   AuthenticatedCommandInventoryRoute: typeof AuthenticatedCommandInventoryRoute
+  AuthenticatedCourseMaterialsRoute: typeof AuthenticatedCourseMaterialsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDocumentsRoute: typeof AuthenticatedDocumentsRoute
+  AuthenticatedEquipmentRequestRoute: typeof AuthenticatedEquipmentRequestRoute
   AuthenticatedEquipmentRequestsRoute: typeof AuthenticatedEquipmentRequestsRoute
+  AuthenticatedExaminationsRoute: typeof AuthenticatedExaminationsRoute
   AuthenticatedFacilitiesRoute: typeof AuthenticatedFacilitiesRoute
   AuthenticatedFinanceRoute: typeof AuthenticatedFinanceRoute
   AuthenticatedHrRoute: typeof AuthenticatedHrRoute
@@ -804,6 +968,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedInventoryRoute: typeof AuthenticatedInventoryRoute
   AuthenticatedIssuesRoute: typeof AuthenticatedIssuesRoute
   AuthenticatedLeaveRoute: typeof AuthenticatedLeaveRoute
+  AuthenticatedLessonPlansRoute: typeof AuthenticatedLessonPlansRoute
   AuthenticatedMailRoute: typeof AuthenticatedMailRoute
   AuthenticatedManualRoute: typeof AuthenticatedManualRoute
   AuthenticatedMyActivitiesRoute: typeof AuthenticatedMyActivitiesRoute
@@ -815,9 +980,11 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSearchRoute: typeof AuthenticatedSearchRoute
   AuthenticatedSecurityRoute: typeof AuthenticatedSecurityRoute
   AuthenticatedStockMovementsRoute: typeof AuthenticatedStockMovementsRoute
+  AuthenticatedStudentPerformanceRoute: typeof AuthenticatedStudentPerformanceRoute
   AuthenticatedSuppliersRoute: typeof AuthenticatedSuppliersRoute
   AuthenticatedSuppliesRoute: typeof AuthenticatedSuppliesRoute
   AuthenticatedTrainingRoute: typeof AuthenticatedTrainingRoute
+  AuthenticatedTrainingScheduleRoute: typeof AuthenticatedTrainingScheduleRoute
   AuthenticatedVehicleBookingsRoute: typeof AuthenticatedVehicleBookingsRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedModulesModuleRoute: typeof AuthenticatedModulesModuleRoute
@@ -828,11 +995,16 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAssetsRoute: AuthenticatedAssetsRoute,
   AuthenticatedAuditRoute: AuthenticatedAuditRoute,
+  AuthenticatedClassAttendanceRoute: AuthenticatedClassAttendanceRoute,
+  AuthenticatedClassroomRoute: AuthenticatedClassroomRoute,
   AuthenticatedCommandRoute: AuthenticatedCommandRoute,
   AuthenticatedCommandInventoryRoute: AuthenticatedCommandInventoryRoute,
+  AuthenticatedCourseMaterialsRoute: AuthenticatedCourseMaterialsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDocumentsRoute: AuthenticatedDocumentsRoute,
+  AuthenticatedEquipmentRequestRoute: AuthenticatedEquipmentRequestRoute,
   AuthenticatedEquipmentRequestsRoute: AuthenticatedEquipmentRequestsRoute,
+  AuthenticatedExaminationsRoute: AuthenticatedExaminationsRoute,
   AuthenticatedFacilitiesRoute: AuthenticatedFacilitiesRoute,
   AuthenticatedFinanceRoute: AuthenticatedFinanceRoute,
   AuthenticatedHrRoute: AuthenticatedHrRoute,
@@ -840,6 +1012,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedInventoryRoute: AuthenticatedInventoryRoute,
   AuthenticatedIssuesRoute: AuthenticatedIssuesRoute,
   AuthenticatedLeaveRoute: AuthenticatedLeaveRoute,
+  AuthenticatedLessonPlansRoute: AuthenticatedLessonPlansRoute,
   AuthenticatedMailRoute: AuthenticatedMailRoute,
   AuthenticatedManualRoute: AuthenticatedManualRoute,
   AuthenticatedMyActivitiesRoute: AuthenticatedMyActivitiesRoute,
@@ -851,9 +1024,11 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSearchRoute: AuthenticatedSearchRoute,
   AuthenticatedSecurityRoute: AuthenticatedSecurityRoute,
   AuthenticatedStockMovementsRoute: AuthenticatedStockMovementsRoute,
+  AuthenticatedStudentPerformanceRoute: AuthenticatedStudentPerformanceRoute,
   AuthenticatedSuppliersRoute: AuthenticatedSuppliersRoute,
   AuthenticatedSuppliesRoute: AuthenticatedSuppliesRoute,
   AuthenticatedTrainingRoute: AuthenticatedTrainingRoute,
+  AuthenticatedTrainingScheduleRoute: AuthenticatedTrainingScheduleRoute,
   AuthenticatedVehicleBookingsRoute: AuthenticatedVehicleBookingsRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedModulesModuleRoute: AuthenticatedModulesModuleRoute,

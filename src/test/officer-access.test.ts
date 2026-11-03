@@ -24,7 +24,7 @@ beforeAll(async()=>{
  await db.exec(`set role authenticated;set test.uid='${me}';`);
 },30000);
 afterAll(()=>db.close());
-it('allows precisely seven Officer pages',()=>{expect(OFFICER_PATHS).toEqual(['/dashboard','/command','/ict','/supplies','/manual','/mail','/my-activities']);for(const path of OFFICER_PATHS)expect(canOpenOfficerPath(['officer'],path)).toBe(true)});
+it('allows precisely the Officer workspace pages',()=>{expect(OFFICER_PATHS).toEqual(['/dashboard','/ict','/command','/equipment-request','/supplies','/manual','/classroom','/mail','/my-activities']);for(const path of OFFICER_PATHS)expect(canOpenOfficerPath(['officer'],path)).toBe(true)});
 it.each(['/hr','/finance','/procurement','/training','/audit','/officers','/organization','/security','/admin/users','/officers/other','/search','/inventory'])('blocks Officer direct URL %s',path=>expect(canOpenOfficerPath(['officer'],path)).toBe(false));
 it('retains privileges for explicitly assigned additional roles',()=>{expect(isPersonalAccount(['officer','hr_admin'])).toBe(false);expect(canOpenOfficerPath(['officer','system_admin'],'/hr')).toBe(true)});
 it.each(['supply_requests','daily_reports','tickets','officers'])('reads only own %s despite a permissive read policy',async table=>{const r=await db.query<{id:string}>(`select id from ${table}`);expect(r.rows.map(x=>x.id)).toEqual([me])});
@@ -32,3 +32,6 @@ it('does not expose audit logs even when the officer is the actor',async()=>expe
 it('retains higher-role record visibility',async()=>{await db.exec(`set test.uid='${other}'`);expect((await db.query('select * from supply_requests')).rows).toHaveLength(2);await db.exec(`set test.uid='${me}'`)});
 it('prevents direct edits to other request records',async()=>{await db.exec('reset role; grant update on supply_requests to authenticated;create policy broad_write on supply_requests for update to authenticated using(true) with check(true);set role authenticated');expect((await db.query(`update supply_requests set requested_by=$1 where id=$2 returning id`,[me,other])).rows).toEqual([])});
 it('allows own private files but blocks another officer file despite broad storage policy',async()=>{expect((await db.query<{name:string}>('select name from storage.objects')).rows.map(r=>r.name)).toEqual(['own.pdf'])});
+it('gives ICT Officer-only accounts the focused workspace',()=>{expect(canOpenOfficerPath(['officer','ict_officer'],'/ict')).toBe(true);expect(canOpenOfficerPath(['officer','ict_officer'],'/hr')).toBe(false);expect(canOpenOfficerPath(['ict_officer','ict_admin'],'/hr')).toBe(true)});
+import {it as it2,expect as expect2} from 'vitest';
+it2('ICT Officer-only accounts see only their own records',()=>{expect2(isPersonalAccount(['officer','ict_officer'])).toBe(true);expect2(isPersonalAccount(['ict_officer','ict_admin'])).toBe(false);});

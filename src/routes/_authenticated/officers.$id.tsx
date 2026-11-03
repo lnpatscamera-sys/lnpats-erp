@@ -1,3 +1,4 @@
+import { idLabel } from '@/lib/hr-enrollment';
 import { formValues } from "@/lib/export";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -72,7 +73,7 @@ function OfficerPage() {
       <div className="no-print mb-2"><Link to="/officers" className="text-sm text-muted-foreground hover:underline">← All officers</Link></div>
       <PageHeader
         title={`${o.rank} ${o.full_name}`}
-        subtitle={`${o.service_number} · ${o.position ?? ""}`}
+        subtitle={`${idLabel((o as {personnel_category?:string|null}).personnel_category)}: ${o.service_number} · ${o.position ?? ""}`}
         actions={
           <>
             {canGenerateReport && (
