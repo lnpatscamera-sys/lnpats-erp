@@ -393,6 +393,13 @@
       "when": 1793712258092,
       "tag": "0055_instructor_assigned_training",
       "breakpoints": true
+    },
+    {
+      "idx": 56,
+      "version": "7",
+      "when": 1793712348524,
+      "tag": "0056_instructor_private_material_access",
+      "breakpoints": true
     }
   ]
 }

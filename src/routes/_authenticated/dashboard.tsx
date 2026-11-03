@@ -1,4 +1,5 @@
-import {isIctOfficerWorkspace, isPersonalAccount} from '@/lib/officer-access';
+import {isIctOfficerWorkspace, isPersonalAccount, isInstructorWorkspace} from '@/lib/officer-access';
+import {InstructorDashboard} from '@/components/InstructorDashboard';
 import {PersonalDashboard} from '@/components/PersonalDashboard';
 import {ICTOfficerDashboard} from '@/components/ICTOfficerDashboard';
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -31,6 +32,7 @@ const LEGEND_COLORS = ['bg-chart-1', 'bg-chart-2', 'bg-chart-3', 'bg-chart-4', '
 
 function Dashboard() {
  const {roles,loading}=useAuth(); if(loading)return <p>Loading dashboard…</p>;
+ if(isInstructorWorkspace(roles)) return <InstructorDashboard/>;
  if(isIctOfficerWorkspace(roles)) return <ICTOfficerDashboard/>;
  return isPersonalAccount(roles)?<PersonalDashboard/>:<CommandDashboard/>;
 }
