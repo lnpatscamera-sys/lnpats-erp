@@ -9,7 +9,7 @@ export const phase2Options = queryOptions({
       supabase.from("correspondence").select("*").order("created_at", { ascending: false }),
       supabase.from("erp_documents").select("*").order("created_at", { ascending: false }),
       supabase.from("document_versions").select("*").order("version", { ascending: false }),
-      supabase.from("officers").select("id,full_name,rank,service_number,user_id,office_id,section_id").order("full_name"),
+      supabase.from("officers").select("id,full_name,rank,service_number,personnel_category,user_id,office_id,section_id").order("full_name"),
       supabase.from("offices").select("id,name").order("rank_order"),
       supabase.from("sections").select("id,name"),
       supabase.from("leave_requests").select("*,officers!officer_id(full_name,rank,service_number)").order("created_at", { ascending: false }),
