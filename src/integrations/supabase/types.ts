@@ -7041,6 +7041,10 @@ export type Database = {
         Args: { _cadet: string; _course: string }
         Returns: boolean
       }
+      instructor_uploaded_material: {
+        Args: { _course: string; _path: string }
+        Returns: boolean
+      }
       instructor_workspace: { Args: never; Returns: boolean }
       leave_stage_role: {
         Args: { _stage: number }

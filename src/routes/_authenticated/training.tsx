@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { InstructorTraining } from '@/components/InstructorTraining';
 import { isInstructorWorkspace } from '@/lib/officer-access';
 import { instructorOptions } from '@/lib/instructor';
@@ -48,7 +48,7 @@ function TrainingAdministration() {
   const canGraduate = hasAny(GRADUATION_ROLES);
   return (
     <div>
-      <PageHeader title="Training Management" subtitle="Cadets, programs, attendance, assessments, graduation and certification" />
+      <PageHeader title="Training Management" subtitle="Cadets, programs, attendance, assessments, graduation and certification" actions={canAdmin && <><Button asChild variant="outline"><Link to="/training-schedule">Training Schedule</Link></Button><Button asChild variant="outline"><Link to="/course-materials">Course Materials</Link></Button><Button asChild variant="outline"><Link to="/lesson-plans">Lesson Plans</Link></Button></>} />
       <Tabs value={tab} onValueChange={setTab} className="mb-6 max-w-full overflow-x-auto">
         <TabsList>
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
