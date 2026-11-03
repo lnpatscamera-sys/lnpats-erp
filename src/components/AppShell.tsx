@@ -66,10 +66,10 @@ function SideNav({ onNav }: { onNav?: () => void }) {
   const { hasAny, roles } = useAuth();
   const personal=isPersonalAccount(roles);
   const groups: typeof NAV = personal ? [{group:'My workspace',items:[
-    {to:'/dashboard',label:'Dashboard',icon:LayoutDashboard}, {to:'/command',label:'Daily Reports',icon:FileText},
-    {to:'/ict',label:'ICT Helpdesk',icon:LifeBuoy}, {to:'/supplies',label:'Request for Supply',icon:PackageSearch},
-    {to:'/manual',label:'User Manual',icon:FileText}, {to:'/mail',label:'Official Email',icon:InboxIcon},
-    {to:'/my-activities',label:'My Activities',icon:ScrollText},
+    {to:'/dashboard',label:'Dashboard',icon:LayoutDashboard}, {to:'/ict',label:'Helpdesk',icon:LifeBuoy},
+    {to:'/command',label:'Daily Report',icon:FileText}, {to:'/equipment-request',label:'Equipment Request',icon:Boxes},
+    {to:'/supplies',label:'Supply Request',icon:PackageSearch}, {to:'/manual',label:'User Manual',icon:FileText},
+    {to:'/classroom',label:'Class Room',icon:GraduationCap}, {to:'/mail',label:'Official Mail',icon:InboxIcon},
   ]}] : NAV;
   return (
     <nav className="flex flex-col gap-6 p-4 text-sm">
