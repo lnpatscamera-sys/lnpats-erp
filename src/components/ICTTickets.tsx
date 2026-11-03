@@ -83,17 +83,17 @@ export function ICTTickets({ d }: { d: ICTData }) {
       fields,
       run: async (v) => {
         if (action === "status") {
-          if (v.outcome === "Transfer to another technician") {
-            if (!v.technician_id) throw new Error("Select the technician to transfer to");
+          if (v["outcome"] === "Transfer to another technician") {
+            if (!v["technician_id"]) throw new Error("Select the technician to transfer to");
             await ictAction("tickets", t.id, "assign", {
-              technician_id: v.technician_id,
-              note: `Transferred from ${person(t.assigned_to)} to ${person(v.technician_id)}: ${v.note}`,
+              technician_id: v["technician_id"],
+              note: `Transferred from ${person(t.assigned_to)} to ${person(v["technician_id"])}: ${v["note"]}`,
             });
             return;
           }
           await ictAction("tickets", t.id, "status", {
-            status: v.outcome,
-            note: `${v.outcome}: ${v.note}`,
+            status: v["outcome"],
+            note: `${v["outcome"]}: ${v["note"]}`,
           });
           return;
         }
