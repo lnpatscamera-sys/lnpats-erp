@@ -31,6 +31,7 @@ beforeAll(async()=>{
  await db.exec(`CREATE FUNCTION officer_owns(uuid) RETURNS boolean LANGUAGE sql AS $$SELECT EXISTS(SELECT 1 FROM officers WHERE id=$1 AND user_id=auth.uid())$$;`);
  for(const t of ['courses','assessments','attendance_records','assessment_results']) await db.exec(`ALTER TABLE ${t} ENABLE ROW LEVEL SECURITY;CREATE POLICY broad ON ${t} FOR ALL TO authenticated USING(true) WITH CHECK(true);CREATE POLICY officer_personal_read ON ${t} AS RESTRICTIVE FOR SELECT TO authenticated USING(true);CREATE POLICY officer_personal_insert ON ${t} AS RESTRICTIVE FOR INSERT TO authenticated WITH CHECK(true);CREATE POLICY officer_personal_update ON ${t} AS RESTRICTIVE FOR UPDATE TO authenticated USING(true) WITH CHECK(true);`);
  await db.exec(readFileSync('drizzle/migrations/0055_instructor_assigned_training.sql','utf8'));
+ await db.exec(readFileSync('drizzle/migrations/0059_instructor_supervisor_authorization.sql','utf8'));
  await db.exec(`INSERT INTO reporting_lines(kind,officer_id) VALUES('Deputy Commandant','${boss}'),('Commandant','${boss}');SET ROLE authenticated;SET test.uid='${me}';`);
 },30000);
 afterAll(()=>db.close());
