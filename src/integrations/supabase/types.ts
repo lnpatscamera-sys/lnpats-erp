@@ -7010,6 +7010,10 @@ export type Database = {
         Args: { _action: string; _id: string; _module: string; _payload?: Json }
         Returns: string
       }
+      hr_assign_section_head: {
+        Args: { _head: string; _section: string }
+        Returns: undefined
+      }
       hr_file_access: { Args: { _path: string }; Returns: boolean }
       hr_head: { Args: { _officer: string }; Returns: boolean }
       hr_owner: { Args: { _officer: string }; Returns: boolean }

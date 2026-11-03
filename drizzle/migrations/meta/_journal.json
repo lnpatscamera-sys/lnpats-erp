@@ -421,6 +421,13 @@
       "when": 1793712475365,
       "tag": "0059_instructor_supervisor_authorization",
       "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1793714145697,
+      "tag": "0060_hr_section_head_assignment",
+      "breakpoints": true
     }
   ]
 }
