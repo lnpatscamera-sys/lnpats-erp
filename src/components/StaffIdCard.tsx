@@ -6,7 +6,7 @@ import { Logo } from '@/components/Logo';
 import { useOfficerPhoto } from '@/components/PassportPhoto';
 import { details, type Employee } from '@/lib/hr';
 
-type P = { e: Pick<Employee, 'full_name' | 'rank' | 'service_number' | 'form_number' | 'blood_group' | 'photo_url' | 'enrollment_profile'> & { department?: string | null | undefined } };
+type P = { e: Pick<Employee, 'full_name' | 'rank' | 'service_number' | 'form_number' | 'blood_group' | 'photo_url' | 'enrollment_profile'> & { personnel_category?: string | null } & { department?: string | null | undefined } };
 
 /** CR80-sized (85.6 x 54 mm) front and back of the LNPATS staff ID card. */
 export function StaffIdCard({ e }: P) {
