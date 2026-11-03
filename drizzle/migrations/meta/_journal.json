@@ -372,6 +372,13 @@
       "when": 1793702124813,
       "tag": "0052_testing_self_approval_appointments",
       "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "7",
+      "when": 1793707750796,
+      "tag": "0053_ict_media_officer_roles",
+      "breakpoints": true
     }
   ]
 }
