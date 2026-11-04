@@ -4976,6 +4976,45 @@ export type Database = {
         }
         Relationships: []
       }
+      report_branding: {
+        Row: {
+          footer_text: string
+          id: number
+          letterhead_path: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          footer_text?: string
+          id?: number
+          letterhead_path?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          footer_text?: string
+          id?: number
+          letterhead_path?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      report_numbers: {
+        Row: {
+          day: string
+          last_no: number
+        }
+        Insert: {
+          day: string
+          last_no?: number
+        }
+        Update: {
+          day?: string
+          last_no?: number
+        }
+        Relationships: []
+      }
       reporting_lines: {
         Row: {
           id: string
@@ -7083,6 +7122,7 @@ export type Database = {
       next_compilation_reference: { Args: never; Returns: string }
       next_hr_form_number: { Args: never; Returns: string }
       next_registry_reference: { Args: { _direction: string }; Returns: string }
+      next_report_number: { Args: never; Returns: string }
       officer_owns: { Args: { _id: string }; Returns: boolean }
       officer_personal_file_reader: {
         Args: { _bucket: string; _path: string }
