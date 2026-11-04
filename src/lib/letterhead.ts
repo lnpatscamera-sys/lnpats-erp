@@ -44,3 +44,16 @@ export async function imageDataUrl(url: string) {
   return await new Promise<string>((ok, fail) => { const r = new FileReader(); r.onload = () => ok(String(r.result)); r.onerror = fail; r.readAsDataURL(blob); });
 }
 export const crestUrls = { left: leftCrest.url, right: rightCrest.url };
+
+import letterheadBanner from '@/assets/lnpats-letterhead.png.asset.json';
+/** Official full-width letterhead banner (crests, titles, tricolour rule). Width:height ≈ 4.35:1. */
+export const letterheadUrl = letterheadBanner.url;
+export const LETTERHEAD_RATIO = 270 / 1175;
+/** Draws the official letterhead across the top of a jsPDF page; returns the y (mm) below it. */
+export async function drawPdfLetterhead(doc: { internal: { pageSize: { getWidth(): number } }; addImage: (...a: never[]) => unknown }, top = 4) {
+  const w = doc.internal.pageSize.getWidth();
+  const data = await imageDataUrl(letterheadUrl).catch(() => null);
+  const imgW = w - 16, imgH = imgW * LETTERHEAD_RATIO;
+  if (data) (doc.addImage as unknown as (d: string, f: string, x: number, y: number, w: number, h: number) => void)(data, 'PNG', 8, top, imgW, imgH);
+  return top + imgH + 2;
+}
