@@ -23,7 +23,7 @@ export async function compilationAction(id: string, action: string, payload: Jso
 export async function uploadCommandFile(file: File, userId: string) { const path = `${userId}/${crypto.randomUUID()}/${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`; const r = await supabase.storage.from('command-files').upload(path, file); if (r.error) throw r.error; return { path, name: file.name }; }
 export async function openCommandFile(path: string) { const r = await supabase.storage.from('command-files').createSignedUrl(path, 300); if (r.error) throw r.error; window.open(r.data.signedUrl, '_blank', 'noopener,noreferrer'); }
 export async function exportCommandWord(title: string, rows: Record<string, unknown>[]) {
-  const { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType, Header, BorderStyle, TextWrappingType } = await import('docx');
+  const { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType, Header } = await import('docx');
   const { letterheadUrl, LETTERHEAD_RATIO, imageBytes, currentWriter, writerLines } = await import('./letterhead');
   const [banner, writer] = await Promise.all([imageBytes(letterheadUrl).catch(() => null), currentWriter().catch(() => null)]);
   const header = new Header({ children: banner ? [new Paragraph({ alignment: AlignmentType.CENTER, children: [new ImageRun({ type: 'png', data: banner, transformation: { width: 620, height: Math.round(620 * LETTERHEAD_RATIO) }, altText: { title: 'LNPATS letterhead', description: 'Official letterhead', name: 'letterhead' } })] })] : [] });

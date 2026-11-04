@@ -8,7 +8,6 @@ import type { HRData } from '@/lib/hr';
 import { ATTENDANCE_ROLES, ATTENDANCE_STATUSES, buildRoster, sha256Hex, type RosterRow } from '@/lib/attendance';
 import { liberiaDate, liberiaDateTime, liberiaTime } from '@/lib/time';
 import { exportCsv, exportExcel } from '@/lib/export';
-import logo from '@/assets/lnpats-logo.jpg.asset.json';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
@@ -33,10 +32,6 @@ function useAttendance(from: string, to: string) {
       return { devices: devices.data ?? [], maps: maps.data ?? [], punches: punches.data ?? [], logs: logs.data ?? [], audit: audit.data ?? [] };
     },
   });
-}
-
-async function logoData(): Promise<string | null> {
-  try { const b = await (await fetch(logo.url)).blob(); return await new Promise(r => { const f = new FileReader(); f.onload = () => r(String(f.result)); f.readAsDataURL(b); }); } catch { return null; }
 }
 
 async function rosterPdf(rows: Record<string, unknown>[], by: string, period: string) {
