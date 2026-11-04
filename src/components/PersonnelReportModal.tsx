@@ -27,7 +27,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/lib/auth';
 import { liberiaDateTime, liberiaDate } from '@/lib/time';
-import { LETTERHEAD_LINES, crestUrls } from '@/lib/letterhead';
+import { letterheadUrl } from '@/lib/letterhead';
 import { retirementSummary } from '@/lib/hr-enrollment';
 import { details } from '@/lib/hr';
 import {
@@ -243,35 +243,8 @@ export function PersonnelReportModal({ officerId, onClose, defaultMode = 'standa
               /* High-fidelity Visual Document Preview */
               <div className="max-w-[210mm] mx-auto bg-card text-card-foreground shadow-md rounded-sm border p-6 md:p-8 space-y-6 print:shadow-none print:border-none print:p-0">
                 {/* Official LNPATS Letterhead (Requirement 4) */}
-                <div className="relative border-b-2 border-primary/90 pb-4 text-center">
-                  <div className="flex items-center justify-between gap-4 mb-2">
-                    <img
-                      src={crestUrls.left}
-                      alt="Republic of Liberia Crest"
-                      className="h-16 w-16 object-contain"
-                      onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
-                    />
-                    <div className="flex-1 space-y-0.5">
-                      <h1 className="text-sm md:text-base font-bold tracking-wide uppercase text-foreground">
-                        {LETTERHEAD_LINES[0]}
-                      </h1>
-                      <h2 className="text-xs md:text-sm font-semibold text-muted-foreground uppercase">
-                        {LETTERHEAD_LINES[1]}
-                      </h2>
-                      <h3 className="text-xs md:text-sm font-bold text-primary tracking-wide uppercase">
-                        {LETTERHEAD_LINES[2]}
-                      </h3>
-                      <p className="text-[10px] md:text-xs text-muted-foreground italic">
-                        {LETTERHEAD_LINES[3]}
-                      </p>
-                    </div>
-                    <img
-                      src={crestUrls.right}
-                      alt="LNPATS Crest"
-                      className="h-16 w-16 object-contain"
-                      onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
-                    />
-                  </div>
+                <div className="relative pb-4 text-center">
+                  <img src={letterheadUrl} alt="Republic of Liberia · Ministry of Justice · Liberia National Police Academy & Training School letterhead" className="w-full h-auto mb-2" />
 
                   {/* Document Title Banner */}
                   <div className="mt-4 pt-2 border-t">
