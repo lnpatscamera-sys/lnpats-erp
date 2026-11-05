@@ -50,6 +50,7 @@ import { Route as AuthenticatedSuppliesRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedTrainingRouteImport } from './routes/_authenticated/training'
 import { Route as AuthenticatedTrainingScheduleRouteImport } from './routes/_authenticated/training-schedule'
 import { Route as AuthenticatedVehicleBookingsRouteImport } from './routes/_authenticated/vehicle-bookings'
+import { Route as AuthenticatedAdminLetterheadRouteImport } from './routes/_authenticated/admin.letterhead'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedModulesModuleRouteImport } from './routes/_authenticated/modules.$module'
 import { Route as AuthenticatedOfficersIndexRouteImport } from './routes/_authenticated/officers.index'
@@ -276,6 +277,12 @@ const AuthenticatedVehicleBookingsRoute =
     path: '/vehicle-bookings',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminLetterheadRoute =
+  AuthenticatedAdminLetterheadRouteImport.update({
+    id: '/admin/letterhead',
+    path: '/admin/letterhead',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   id: '/admin/users',
   path: '/admin/users',
@@ -352,6 +359,7 @@ export interface FileRoutesByFullPath {
   '/training': typeof AuthenticatedTrainingRoute
   '/training-schedule': typeof AuthenticatedTrainingScheduleRoute
   '/vehicle-bookings': typeof AuthenticatedVehicleBookingsRoute
+  '/admin/letterhead': typeof AuthenticatedAdminLetterheadRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/modules/$module': typeof AuthenticatedModulesModuleRoute
   '/officers/$id': typeof AuthenticatedOfficersIdRoute
@@ -400,6 +408,7 @@ export interface FileRoutesByTo {
   '/training': typeof AuthenticatedTrainingRoute
   '/training-schedule': typeof AuthenticatedTrainingScheduleRoute
   '/vehicle-bookings': typeof AuthenticatedVehicleBookingsRoute
+  '/admin/letterhead': typeof AuthenticatedAdminLetterheadRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/modules/$module': typeof AuthenticatedModulesModuleRoute
   '/officers/$id': typeof AuthenticatedOfficersIdRoute
@@ -450,6 +459,7 @@ export interface FileRoutesById {
   '/_authenticated/training': typeof AuthenticatedTrainingRoute
   '/_authenticated/training-schedule': typeof AuthenticatedTrainingScheduleRoute
   '/_authenticated/vehicle-bookings': typeof AuthenticatedVehicleBookingsRoute
+  '/_authenticated/admin/letterhead': typeof AuthenticatedAdminLetterheadRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/modules/$module': typeof AuthenticatedModulesModuleRoute
   '/_authenticated/officers/$id': typeof AuthenticatedOfficersIdRoute
@@ -500,6 +510,7 @@ export interface FileRouteTypes {
     | '/training'
     | '/training-schedule'
     | '/vehicle-bookings'
+    | '/admin/letterhead'
     | '/admin/users'
     | '/modules/$module'
     | '/officers/$id'
@@ -548,6 +559,7 @@ export interface FileRouteTypes {
     | '/training'
     | '/training-schedule'
     | '/vehicle-bookings'
+    | '/admin/letterhead'
     | '/admin/users'
     | '/modules/$module'
     | '/officers/$id'
@@ -597,6 +609,7 @@ export interface FileRouteTypes {
     | '/_authenticated/training'
     | '/_authenticated/training-schedule'
     | '/_authenticated/vehicle-bookings'
+    | '/_authenticated/admin/letterhead'
     | '/_authenticated/admin/users'
     | '/_authenticated/modules/$module'
     | '/_authenticated/officers/$id'
@@ -903,6 +916,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVehicleBookingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/letterhead': {
+      id: '/_authenticated/admin/letterhead'
+      path: '/admin/letterhead'
+      fullPath: '/admin/letterhead'
+      preLoaderRoute: typeof AuthenticatedAdminLetterheadRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/users': {
       id: '/_authenticated/admin/users'
       path: '/admin/users'
@@ -986,6 +1006,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTrainingRoute: typeof AuthenticatedTrainingRoute
   AuthenticatedTrainingScheduleRoute: typeof AuthenticatedTrainingScheduleRoute
   AuthenticatedVehicleBookingsRoute: typeof AuthenticatedVehicleBookingsRoute
+  AuthenticatedAdminLetterheadRoute: typeof AuthenticatedAdminLetterheadRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedModulesModuleRoute: typeof AuthenticatedModulesModuleRoute
   AuthenticatedOfficersIdRoute: typeof AuthenticatedOfficersIdRoute
@@ -1030,6 +1051,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTrainingRoute: AuthenticatedTrainingRoute,
   AuthenticatedTrainingScheduleRoute: AuthenticatedTrainingScheduleRoute,
   AuthenticatedVehicleBookingsRoute: AuthenticatedVehicleBookingsRoute,
+  AuthenticatedAdminLetterheadRoute: AuthenticatedAdminLetterheadRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedModulesModuleRoute: AuthenticatedModulesModuleRoute,
   AuthenticatedOfficersIdRoute: AuthenticatedOfficersIdRoute,

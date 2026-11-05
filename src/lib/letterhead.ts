@@ -87,4 +87,22 @@ export async function pdfLetterhead() {
   };
   return { draw, data, footer: b.footer };
 }
+type PdfDoc = PdfLike & { getNumberOfPages(): number; setPage(n: number): unknown; setFontSize(n: number): unknown; setFont(f: string, s: string): unknown; text(t: string | string[], x: number, y: number, o?: Record<string, unknown>): unknown; line(a: number, b: number, c: number, d: number): unknown; lastAutoTable?: { finalY: number } };
+/** Writer signature block + footer, report number and page numbers on every page. */
+export function finishPdf(doc: PdfDoc, opts: { footer: string; reportNo: string; writer: ReportWriter | null; y: number }) {
+  const w = doc.internal.pageSize.getWidth(), h = doc.internal.pageSize.getHeight();
+  let y = opts.y + 14;
+  if (y > h - 45) { (doc as unknown as { addPage(): void }).addPage(); y = 30; }
+  doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+  doc.line(14, y, 84, y); doc.text('Prepared / signed by', 14, y + 4);
+  if (opts.writer) { doc.setFont('helvetica', 'bold'); doc.text(opts.writer.name, 14, y + 9); doc.setFont('helvetica', 'normal'); doc.text([opts.writer.position, opts.writer.section].filter(Boolean).join(', '), 14, y + 13); }
+  doc.line(w - 84, y, w - 14, y); doc.text('Approved by (signature & date)', w - 84, y + 4);
+  const n = doc.getNumberOfPages();
+  for (let i = 1; i <= n; i++) {
+    doc.setPage(i); doc.setFontSize(7); doc.setFont('helvetica', 'normal');
+    doc.line(14, h - 12, w - 14, h - 12);
+    doc.text(opts.footer, 14, h - 8);
+    doc.text(`${opts.reportNo} · Page ${i} of ${n}`, w - 14, h - 8, { align: 'right' });
+  }
+}
 export async function drawPdfLetterhead(doc: PdfLike, top = 4) { return (await pdfLetterhead()).draw(doc, top); }

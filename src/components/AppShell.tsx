@@ -1,3 +1,4 @@
+import { PrintLetterhead } from "@/components/PrintLetterhead";
 import { ForcePasswordChange } from "@/components/ForcePasswordChange";
 import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -59,7 +60,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { to: "/modules/$module", params: { module: "transport" }, label: "Transport", icon: Truck },
     ],
   },
-  { group: "Administration", items: [{ to: "/audit", label: "Audit Log", icon: ScrollText }, { to: "/admin/users", label: "Users & Roles", icon: ShieldCheck }, { to: "/manual", label: "User Manual", icon: FileText }] },
+  { group: "Administration", items: [{ to: "/audit", label: "Audit Log", icon: ScrollText }, { to: "/admin/users", label: "Users & Roles", icon: ShieldCheck }, { to: "/admin/letterhead", label: "Report Letterhead", icon: FileText }, { to: "/manual", label: "User Manual", icon: FileText }] },
 ];
 
 function SideNav({ onNav }: { onNav?: () => void }) {
@@ -200,6 +201,7 @@ export function AppShell() {
           <Button variant="ghost" size="icon" onClick={signOut} aria-label="Sign out"><LogOut className="h-5 w-5" /></Button>
         </header>
         <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-[1400px] w-full mx-auto">
+          <PrintLetterhead />
           {loading ? <p>Loading account…</p> : canOpenOfficerPath(roles,pathname) ? <Outlet /> : <div role="alert"><PageHeader title="Access Denied"/><p className="text-muted-foreground">Your account is not authorized to access this page.</p></div>}
         </main>
       </div>
