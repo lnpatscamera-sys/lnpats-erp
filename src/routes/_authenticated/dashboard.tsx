@@ -1,7 +1,7 @@
-import {isIctOfficerWorkspace, isPersonalAccount, isInstructorWorkspace} from '@/lib/officer-access';
-import {InstructorDashboard} from '@/components/InstructorDashboard';
-import {PersonalDashboard} from '@/components/PersonalDashboard';
-import {ICTOfficerDashboard} from '@/components/ICTOfficerDashboard';
+import { isIctOfficerWorkspace, isPersonalAccount, isInstructorWorkspace } from '@/lib/officer-access';
+import { InstructorDashboard } from '@/components/InstructorDashboard';
+import { PersonalDashboard } from '@/components/PersonalDashboard';
+import { ICTOfficerDashboard } from '@/components/ICTOfficerDashboard';
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -23,7 +23,16 @@ import { OfficialMailButton } from '@/components/OfficialMail';
 import { POLICE_RANKS } from '@/lib/police-ranks';
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard — LNPATS ERP" }, { name: "description", content: "Command overview of LNPATS officers, leave, supply requests, and inventory." }, { property: "og:title", content: "Dashboard — LNPATS ERP" }, { property: "og:description", content: "Command overview of LNPATS officers, leave, supply requests, and inventory." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({
+    meta: [
+      { title: "Dashboard — LNPATS ERP" },
+      { name: "description", content: "Command overview of LNPATS officers, leave, supply requests, and inventory." },
+      { property: "og:title", content: "Dashboard — LNPATS ERP" },
+      { property: "og:description", content: "Command overview of LNPATS officers, leave, supply requests, and inventory." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: Dashboard,
 });
 
@@ -31,11 +40,13 @@ const COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--cha
 const LEGEND_COLORS = ['bg-chart-1', 'bg-chart-2', 'bg-chart-3', 'bg-chart-4', 'bg-chart-5'];
 
 function Dashboard() {
- const {roles,loading}=useAuth(); if(loading)return <p>Loading dashboard…</p>;
- if(isInstructorWorkspace(roles)) return <InstructorDashboard/>;
- if(isIctOfficerWorkspace(roles)) return <ICTOfficerDashboard/>;
- return isPersonalAccount(roles)?<PersonalDashboard/>:<CommandDashboard/>;
+  const { roles, loading } = useAuth();
+  if (loading) return <p>Loading dashboard…</p>;
+  if (isInstructorWorkspace(roles)) return <InstructorDashboard />;
+  if (isIctOfficerWorkspace(roles)) return <ICTOfficerDashboard />;
+  return isPersonalAccount(roles) ? <PersonalDashboard /> : <CommandDashboard />;
 }
+
 function CommandDashboard() {
   const { hasAny } = useAuth();
   const qc = useQueryClient();
@@ -82,11 +93,148 @@ function CommandDashboard() {
     { label: "Low stock alerts", value: lowStock.length, sub: "at or below reorder level", icon: AlertTriangle },
   ];
 
+  const outstandingReportsCount = command.data
+    ? command.data.summary.expected - command.data.summary.submitted
+    : 0;
+
   return (
     <div>
-      <PageHeader title="Command Dashboard" subtitle="Live overview of the Academy — updates automatically" actions={<><Button asChild><Link to="/command">Daily Report</Link></Button><Button asChild variant="outline"><Link to="/supplies">Request Supply</Link></Button><OfficialMailButton /></>} />
-      {command.data && <section className="border-y py-4 mb-5"><div className="flex flex-wrap gap-8 text-sm"><div>Reports submitted<strong className="block text-2xl">{command.data.summary.submitted}</strong></div><div>Outstanding reports<strong className="block text-2xl">{command.data.summary.expected-command.data.summary.submitted}</strong></div><Button variant="link" asChild><Link to="/command">Command reporting</Link></Button>{hasAny(['commandant','dc_admin','storekeeper'])&&<Button variant="link" asChild><Link to="/command-inventory">Command Inventory Overview</Link></Button>}</div>{reportAlertHour(new Date()) !== null && Number(reportAlertHour(new Date()))>=17&&command.data.summary.missing.length>0&&<div className="mt-3"><h2 className="text-sm font-semibold">OFFICERS WHO FAILED TO REPORT TODAY</h2><ul className="text-sm mt-2">{command.data.summary.missing.map(o=><li key={o.id}>{o.name} · {o.employee_number}</li>)}</ul></div>}</section>}
-      <div className="flex flex-wrap gap-4 border-y py-4 mb-5 text-sm"><Link to="/registry" className="flex-1 min-w-40"><span className="text-muted-foreground">Registry pending</span><strong className="block text-2xl">{phase.data?.registry.filter(r=>r.stage<6).length ?? 0}</strong><span className="text-xs text-muted-foreground">{phase.data?.registry.filter(r=>r.stage<7&&hasAny([...(REGISTRY_ROLES[r.stage]??[]),"commandant","ict_admin"])).length ?? 0} awaiting you</span></Link><Link to="/documents" className="flex-1 min-w-40"><span className="text-muted-foreground">Document approvals</span><strong className="block text-2xl">{phase.data?.documents.filter(d=>d.status==='Pending'&&hasAny([...(DOCUMENT_ROLES[d.stage]??[]),"commandant","ict_admin"])).length ?? 0}</strong><span className="text-xs text-muted-foreground">Awaiting your review</span></Link><Link to="/leave" className="flex-1 min-w-40"><span className="text-muted-foreground">HR processing</span><strong className="block text-2xl">{phase.data?.leave.filter(l=>l.stage===5&&l.status==='Pending').length ?? 0}</strong><span className="text-xs text-muted-foreground">Leave awaiting final processing</span></Link><Link to="/search" className="self-center text-primary font-medium">Search records →</Link></div>
+      <PageHeader
+        title="Command Dashboard"
+        subtitle="Live overview of the Academy — updates automatically"
+        actions={
+          <>
+            <Button asChild>
+              <Link to="/command">Daily Report</Link>
+            </Button>
+            {/* Clickable Outstanding Report button */}
+            <Button
+              asChild
+              variant="outline"
+              className={
+                outstandingReportsCount > 0
+                  ? "border-destructive/50 text-destructive hover:bg-destructive/10 font-medium"
+                  : ""
+              }
+            >
+              <Link to="/command" search={{ tab: 'outstanding' }}>
+                <AlertTriangle className="h-4 w-4 mr-1.5" />
+                Outstanding Reports ({outstandingReportsCount})
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/supplies">Request Supply</Link>
+            </Button>
+            <OfficialMailButton />
+          </>
+        }
+      />
+
+      {/* Command Reporting Live Status Banner with Clickable Buttons */}
+      {command.data && (
+        <section className="border-y py-4 mb-5">
+          <div className="flex flex-wrap items-center gap-6 md:gap-8 text-sm">
+            <Link
+              to="/command"
+              search={{ tab: 'reports' }}
+              className="p-2 -m-2 rounded hover:bg-muted/60 transition-colors group"
+            >
+              <span className="text-muted-foreground block text-xs">Reports submitted</span>
+              <strong className="block text-2xl font-bold group-hover:text-primary transition-colors">
+                {command.data.summary.submitted}
+              </strong>
+            </Link>
+
+            {/* Clickable Outstanding Reports Card Button */}
+            <Link
+              to="/command"
+              search={{ tab: 'outstanding' }}
+              className="p-2.5 -m-2 rounded-lg border border-destructive/30 bg-destructive/5 hover:bg-destructive/10 transition-all group flex items-center gap-3 cursor-pointer"
+              title="Click to move to Outstanding Reports"
+            >
+              <div>
+                <span className="text-destructive font-medium flex items-center gap-1.5 text-xs">
+                  <span className="inline-block w-2 h-2 rounded-full bg-destructive animate-pulse" />
+                  Outstanding reports
+                </span>
+                <strong className="block text-2xl font-bold text-destructive">
+                  {outstandingReportsCount}
+                </strong>
+              </div>
+              <span className="text-xs text-destructive/90 underline-offset-4 group-hover:underline font-semibold ml-2">
+                Move to Report →
+              </span>
+            </Link>
+
+            <Button variant="link" asChild className="p-0 h-auto">
+              <Link to="/command">Command reporting</Link>
+            </Button>
+
+            {hasAny(['commandant', 'dc_admin', 'storekeeper']) && (
+              <Button variant="link" asChild className="p-0 h-auto">
+                <Link to="/command-inventory">Command Inventory Overview</Link>
+              </Button>
+            )}
+          </div>
+
+          {/* Officers Who Failed to Report Today */}
+          {reportAlertHour(new Date()) !== null &&
+            Number(reportAlertHour(new Date())) >= 17 &&
+            command.data.summary.missing.length > 0 && (
+              <div className="mt-3 p-3.5 rounded-lg border border-destructive/30 bg-destructive/10">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <h2 className="text-sm font-semibold text-destructive flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4" />
+                    OFFICERS WHO FAILED TO REPORT TODAY ({command.data.summary.missing.length})
+                  </h2>
+                  <Button size="sm" variant="destructive" asChild>
+                    <Link to="/command" search={{ tab: 'outstanding' }}>
+                      Open Outstanding Report
+                    </Link>
+                  </Button>
+                </div>
+                <ul className="text-sm mt-2 divide-y divide-destructive/20">
+                  {command.data.summary.missing.slice(0, 5).map((o) => (
+                    <li key={o.id} className="py-1 flex justify-between">
+                      <span>{o.name}</span>
+                      <span className="font-mono text-xs">{o.employee_number || 'No ID'}</span>
+                    </li>
+                  ))}
+                  {command.data.summary.missing.length > 5 && (
+                    <li className="pt-2 text-xs text-destructive font-medium">
+                      + {command.data.summary.missing.length - 5} more officer(s). Click to view full outstanding report.
+                    </li>
+                  )}
+                </ul>
+              </div>
+            )}
+        </section>
+      )}
+
+      {/* Cross-module quick links */}
+      <div className="flex flex-wrap gap-4 border-y py-4 mb-5 text-sm">
+        <Link to="/registry" className="flex-1 min-w-40">
+          <span className="text-muted-foreground">Registry pending</span>
+          <strong className="block text-2xl">{phase.data?.registry.filter(r => r.stage < 6).length ?? 0}</strong>
+          <span className="text-xs text-muted-foreground">
+            {phase.data?.registry.filter(r => r.stage < 7 && hasAny([...(REGISTRY_ROLES[r.stage] ?? []), "commandant", "ict_admin"])).length ?? 0} awaiting you
+          </span>
+        </Link>
+        <Link to="/documents" className="flex-1 min-w-40">
+          <span className="text-muted-foreground">Document approvals</span>
+          <strong className="block text-2xl">
+            {phase.data?.documents.filter(d => d.status === 'Pending' && hasAny([...(DOCUMENT_ROLES[d.stage] ?? []), "commandant", "ict_admin"])).length ?? 0}
+          </strong>
+          <span className="text-xs text-muted-foreground">Awaiting your review</span>
+        </Link>
+        <Link to="/leave" className="flex-1 min-w-40">
+          <span className="text-muted-foreground">HR processing</span>
+          <strong className="block text-2xl">{phase.data?.leave.filter(l => l.stage === 5 && l.status === 'Pending').length ?? 0}</strong>
+          <span className="text-xs text-muted-foreground">Leave awaiting final processing</span>
+        </Link>
+        <Link to="/search" className="self-center text-primary font-medium">Search records →</Link>
+      </div>
+
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((k) => (
           <Card key={k.label}>
