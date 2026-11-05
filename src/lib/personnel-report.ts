@@ -1,7 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
 import { liberiaDate, liberiaDateTime } from '@/lib/time';
-import { LETTERHEAD_LINES, crestUrls, imageDataUrl } from '@/lib/letterhead';
+import { LETTERHEAD_RATIO, letterheadUrl, imageDataUrl } from '@/lib/letterhead';
 import { details } from '@/lib/hr';
 import { retirementSummary } from '@/lib/hr-enrollment';
 
@@ -127,10 +127,7 @@ export async function generatePersonnelReportPdf(params: {
   const contentWidth = pageWidth - margin * 2;
 
   // Retrieve crests
-  const [leftCrestData, rightCrestData] = await Promise.all([
-    imageDataUrl(crestUrls.left).catch(() => null),
-    imageDataUrl(crestUrls.right).catch(() => null),
-  ]);
+  const bannerData = await imageDataUrl(letterheadUrl).catch(() => null);
 
   const totalPagesExp = '{total_pages_count_string}';
   const issueDate = liberiaDateTime(new Date());
@@ -167,49 +164,11 @@ export async function generatePersonnelReportPdf(params: {
     d.text(pageStr, pageWidth - margin, pageHeight - 7, { align: 'right' });
   };
 
-  // --- PAGE 1: OFFICIAL LETTERHEAD ---
-  // Left and Right Crests
-  if (leftCrestData) {
-    try {
-      doc.addImage(leftCrestData, 'JPEG', margin, 8, 22, 22);
-    } catch {
-      // Graceful fallback if image decoding fails
-    }
+  // --- PAGE 1: OFFICIAL LETTERHEAD (banner image) ---
+  if (bannerData) {
+    const bh = 30, bw = bh / LETTERHEAD_RATIO;
+    try { doc.addImage(bannerData, 'PNG', (pageWidth - bw) / 2, 4, bw, bh); } catch { /* fallback: no banner */ }
   }
-  if (rightCrestData) {
-    try {
-      doc.addImage(rightCrestData, 'JPEG', pageWidth - margin - 22, 8, 22, 22);
-    } catch {
-      // Graceful fallback
-    }
-  }
-
-  // Header typography
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(13);
-  doc.setTextColor(15, 23, 42);
-  doc.text(LETTERHEAD_LINES[0], pageWidth / 2, 13, { align: 'center' });
-
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10.5);
-  doc.text(LETTERHEAD_LINES[1], pageWidth / 2, 18, { align: 'center' });
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.setTextColor(26, 54, 93);
-  doc.text(LETTERHEAD_LINES[2], pageWidth / 2, 23.5, { align: 'center' });
-
-  doc.setFont('helvetica', 'italic');
-  doc.setFontSize(8.5);
-  doc.setTextColor(90, 90, 90);
-  doc.text(LETTERHEAD_LINES[3], pageWidth / 2, 28, { align: 'center' });
-
-  // Letterhead divider
-  doc.setLineWidth(0.8);
-  doc.setDrawColor(26, 54, 93);
-  doc.line(margin, 32, pageWidth - margin, 32);
-  doc.setLineWidth(0.2);
-  doc.line(margin, 33, pageWidth - margin, 33);
 
   // Document Title Banner
   const titleText = mode === 'full' ? 'FULL PERSONNEL DOSSIER & SERVICE FILE' : 'OFFICIAL PERSONNEL RECORD REPORT';

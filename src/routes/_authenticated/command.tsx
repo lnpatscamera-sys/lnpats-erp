@@ -142,7 +142,7 @@ function Command() {
         </TabsContent>
 
         <TabsContent value="compile">
-          <CommandCompilations reports={data.reports} compilations={data.compilations} />
+          <CommandCompilations reports={data.reports} compilations={data.compilations} summary={data.summary} />
         </TabsContent>
 
         <TabsContent value="lines">

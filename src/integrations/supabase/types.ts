@@ -1376,12 +1376,16 @@ export type Database = {
           id: string
           period: string
           recipient_id: string | null
+          remarks: string | null
           report_number: string
           signature: string
+          signed_at: string | null
           source_ids: string[]
           source_snapshots: Json
           start_date: string
+          statistics: Json | null
           status: string
+          summary: string | null
           title: string
         }
         Insert: {
@@ -1393,12 +1397,16 @@ export type Database = {
           id?: string
           period: string
           recipient_id?: string | null
+          remarks?: string | null
           report_number?: string
           signature: string
+          signed_at?: string | null
           source_ids: string[]
           source_snapshots: Json
           start_date: string
+          statistics?: Json | null
           status?: string
+          summary?: string | null
           title: string
         }
         Update: {
@@ -1410,12 +1418,16 @@ export type Database = {
           id?: string
           period?: string
           recipient_id?: string | null
+          remarks?: string | null
           report_number?: string
           signature?: string
+          signed_at?: string | null
           source_ids?: string[]
           source_snapshots?: Json
           start_date?: string
+          statistics?: Json | null
           status?: string
+          summary?: string | null
           title?: string
         }
         Relationships: []
@@ -4964,6 +4976,45 @@ export type Database = {
         }
         Relationships: []
       }
+      report_branding: {
+        Row: {
+          footer_text: string
+          id: number
+          letterhead_path: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          footer_text?: string
+          id?: number
+          letterhead_path?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          footer_text?: string
+          id?: number
+          letterhead_path?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      report_numbers: {
+        Row: {
+          day: string
+          last_no: number
+        }
+        Insert: {
+          day: string
+          last_no?: number
+        }
+        Update: {
+          day?: string
+          last_no?: number
+        }
+        Relationships: []
+      }
       reporting_lines: {
         Row: {
           id: string
@@ -6962,6 +7013,10 @@ export type Database = {
       command_supply_reader: { Args: { _id: string }; Returns: boolean }
       command_supply_route: { Args: { _id: string }; Returns: undefined }
       command_validate_files: { Args: { _files: Json }; Returns: undefined }
+      compilation_action: {
+        Args: { _action: string; _id: string; _payload: Json }
+        Returns: undefined
+      }
       compile_daily_reports: { Args: { _payload: Json }; Returns: string }
       daily_report_action: {
         Args: { _action: string; _id: string; _payload?: Json }
@@ -7064,8 +7119,10 @@ export type Database = {
         }[]
       }
       my_section: { Args: never; Returns: string }
+      next_compilation_reference: { Args: never; Returns: string }
       next_hr_form_number: { Args: never; Returns: string }
       next_registry_reference: { Args: { _direction: string }; Returns: string }
+      next_report_number: { Args: never; Returns: string }
       officer_owns: { Args: { _id: string }; Returns: boolean }
       officer_personal_file_reader: {
         Args: { _bucket: string; _path: string }
