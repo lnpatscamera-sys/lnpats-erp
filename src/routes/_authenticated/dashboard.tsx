@@ -4,10 +4,10 @@ import { PersonalDashboard } from '@/components/PersonalDashboard';
 import { ICTOfficerDashboard } from '@/components/ICTOfficerDashboard';
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Users, CalendarDays, PackageSearch, AlertTriangle } from "lucide-react";
+import { Users, CalendarDays, PackageSearch, AlertTriangle, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader, StatusBadge } from "@/components/AppShell";
@@ -21,6 +21,7 @@ import { reportAlertHour } from '@/lib/command-rules';
 import { liberiaDateOnly } from '@/lib/time';
 import { OfficialMailButton } from '@/components/OfficialMail';
 import { POLICE_RANKS } from '@/lib/police-ranks';
+import { ICTOfficialEmailsModal } from '@/components/ICTOfficialEmailsModal';
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -50,6 +51,8 @@ function Dashboard() {
 function CommandDashboard() {
   const { hasAny } = useAuth();
   const qc = useQueryClient();
+  const [openOfficialEmails, setOpenOfficialEmails] = useState(false);
+  const isSuperAdmin = hasAny(['system_admin', 'ict_admin']);
   const phase = useQuery(phase2Options);
   const command = useQuery(commandOptions);
   const { data } = useQuery({
@@ -125,6 +128,16 @@ function CommandDashboard() {
             <Button asChild variant="outline">
               <Link to="/supplies">Request Supply</Link>
             </Button>
+            {isSuperAdmin && (
+              <Button
+                variant="outline"
+                onClick={() => setOpenOfficialEmails(true)}
+                className="gap-2 border-emerald-600/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10 font-medium"
+              >
+                <Mail className="h-4 w-4" />
+                Official Email Accounts
+              </Button>
+            )}
             <OfficialMailButton />
           </>
         }
@@ -330,6 +343,14 @@ function CommandDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Official Email Accounts Modal for Super Admin */}
+      {isSuperAdmin && (
+        <ICTOfficialEmailsModal
+          open={openOfficialEmails}
+          onOpenChange={setOpenOfficialEmails}
+        />
+      )}
     </div>
   );
 }

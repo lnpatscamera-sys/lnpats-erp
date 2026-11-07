@@ -1,4 +1,5 @@
-import {isPersonalAccount} from '@/lib/officer-access';
+import { useState } from "react";
+import { isPersonalAccount } from '@/lib/officer-access';
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { PageHeader } from "@/components/AppShell";
@@ -11,6 +12,10 @@ import { ICTAssets } from "@/components/ICTAssets";
 import { ICTOverview, ICTReports } from "@/components/ICTOverview";
 import { ICTContacts } from "@/components/ICTContacts";
 import { useAuth } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import { Mail } from "lucide-react";
+import { ICTOfficialEmailsModal } from "@/components/ICTOfficialEmailsModal";
+
 export const Route = createFileRoute("/_authenticated/ict")({
   head: () =>
     phaseHead(
@@ -20,10 +25,22 @@ export const Route = createFileRoute("/_authenticated/ict")({
   loader: ({ context }) => context.queryClient.ensureQueryData(ictOptions),
   component: ICTPage,
 });
+
 function ICTPage() {
   const { data: d } = useSuspenseQuery(ictOptions);
   const { hasAny, roles } = useAuth();
-  if(isPersonalAccount(roles)) return <div><PageHeader title="ICT Helpdesk"/><ICTTickets d={d}/></div>;
+  const [openEmailsModal, setOpenEmailsModal] = useState(false);
+  const isSuperAdmin = hasAny(["system_admin", "ict_admin"]);
+
+  if (isPersonalAccount(roles)) {
+    return (
+      <div>
+        <PageHeader title="ICT Helpdesk" />
+        <ICTTickets d={d} />
+      </div>
+    );
+  }
+
   const contacts = hasAny(["ict_admin"]);
   const kinds: { id: ICTKind; label: string }[] = [
     { id: "requests", label: "Service requests" },
@@ -32,9 +49,23 @@ function ICTPage() {
     { id: "accounts", label: "Accounts" },
     { id: "knowledge", label: "Knowledge base" },
   ];
+
   return (
     <div>
-      <PageHeader title="ICT Helpdesk" />
+      <PageHeader
+        title="ICT Helpdesk"
+        actions={
+          isSuperAdmin && (
+            <Button
+              onClick={() => setOpenEmailsModal(true)}
+              className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xs"
+            >
+              <Mail className="h-4 w-4" />
+              Official Email Accounts
+            </Button>
+          )
+        }
+      />
       <Tabs defaultValue="dashboard" className="min-w-0">
         <div className="overflow-x-auto mb-5">
           <TabsList className="w-max">
@@ -68,11 +99,17 @@ function ICTPage() {
         <TabsContent value="maintenance">
           <ICTAssets d={d} maintenance />
         </TabsContent>
-        {contacts && <TabsContent value="contacts"><ICTContacts /></TabsContent>}
+        {contacts && (
+          <TabsContent value="contacts">
+            <ICTContacts />
+          </TabsContent>
+        )}
         <TabsContent value="reports">
           <ICTReports d={d} />
         </TabsContent>
       </Tabs>
+
+      <ICTOfficialEmailsModal open={openEmailsModal} onOpenChange={setOpenEmailsModal} />
     </div>
   );
 }
