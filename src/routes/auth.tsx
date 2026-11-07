@@ -73,30 +73,72 @@ function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen grid md:grid-cols-2">
-      <div className="hidden md:flex flex-col items-center justify-center relative overflow-hidden bg-sidebar text-sidebar-foreground p-10 text-center">
-        {/* Campus background with overlay */}
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${campusBg})` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-sidebar/92 via-sidebar/85 to-sidebar/95 backdrop-brightness-[0.75]" />
-        <div className="relative z-10 flex flex-col items-center">
-          <Logo className="h-40 w-40 ring-4 ring-gold shadow-2xl" />
-          <h2 className="mt-6 text-2xl font-bold text-white drop-shadow">LNPATS ERP</h2>
-          <p className="mt-2 text-sm text-slate-200/85 max-w-xs">Liberia National Police Academy and Training School</p>
-        </div>
+    <div className="relative min-h-screen grid md:grid-cols-2 overflow-hidden bg-slate-950">
+      {/* Full campus background photo covering the entire login screen */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${campusBg})` }}
+      />
+      {/* Light transparent scrim so the photo remains vibrant and clear without dark navy blue */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/45" />
+
+      {/* Left panel: Logo and Title on transparent background */}
+      <div className="relative z-10 hidden md:flex flex-col items-center justify-center p-10 text-center bg-transparent">
+        <Logo className="h-40 w-40 ring-4 ring-gold shadow-2xl" />
+        <h2 className="mt-6 text-3xl font-extrabold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
+          LNPATS ERP
+        </h2>
+        <p className="mt-2 text-sm text-white/90 max-w-xs drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+          Liberia National Police Academy and Training School
+        </p>
       </div>
-      <div className="flex items-center justify-center p-6">
-        <form onSubmit={submit} className="w-full max-w-sm space-y-4">
-          <div className="md:hidden flex justify-center"><Logo className="h-20 w-20" /></div>
-          <h1 className="text-2xl font-bold">Staff sign in</h1>
-          <div className="space-y-1"><Label htmlFor="auth-user">User name (LNP ID Number)</Label><Input id="auth-user" required autoComplete="username" value={username} onChange={(e) => setUsername(e.target.value)} /></div>
-          <div className="space-y-1"><Label htmlFor="auth-pass">Password</Label><Input id="auth-pass" type="password" required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} /></div>
-          <Button className="w-full" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</Button>
-          <button type="button" className="block w-full text-sm text-primary underline-offset-4 hover:underline" onClick={forgot}>Forgot password?</button>
-          <p className="text-xs text-muted-foreground text-center">Accounts are opened by the Human Resources Section only. Contact HR if you do not have one.</p>
-        </form>
+
+      {/* Right panel: Staff sign-in form in a frosted transparent card */}
+      <div className="relative z-10 flex items-center justify-center p-6 md:p-10">
+        <div className="w-full max-w-md rounded-2xl bg-white/90 dark:bg-slate-950/80 backdrop-blur-md p-8 border border-white/20 shadow-2xl">
+          <form onSubmit={submit} className="w-full space-y-4">
+            <div className="md:hidden flex justify-center mb-2">
+              <Logo className="h-20 w-20 ring-2 ring-gold" />
+            </div>
+            <h1 className="text-2xl font-bold text-foreground">Staff sign in</h1>
+            <div className="space-y-1">
+              <Label htmlFor="auth-user">User name (LNP ID Number)</Label>
+              <Input
+                id="auth-user"
+                required
+                autoComplete="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="bg-background/80"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="auth-pass">Password</Label>
+              <Input
+                id="auth-pass"
+                type="password"
+                required
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="bg-background/80"
+              />
+            </div>
+            <Button className="w-full bg-primary hover:bg-primary/90 font-semibold" disabled={busy}>
+              {busy ? "Signing in…" : "Sign in"}
+            </Button>
+            <button
+              type="button"
+              className="block w-full text-sm text-primary underline-offset-4 hover:underline"
+              onClick={forgot}
+            >
+              Forgot password?
+            </button>
+            <p className="text-xs text-muted-foreground text-center">
+              Accounts are opened by the Human Resources Section only. Contact HR if you do not have one.
+            </p>
+          </form>
+        </div>
       </div>
     </div>
   );
