@@ -135,13 +135,13 @@ export function OutstandingReports({
 
       {/* Advisory Alert Banner */}
       {outstandingCount > 0 ? (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-destructive flex items-start gap-3">
-          <AlertTriangle className="h-5 w-5 mt-0.5 shrink-0" />
+        <div className="rounded-lg border border-yellow-500/60 bg-yellow-500 dark:bg-yellow-600 p-4 text-white flex items-start gap-3 shadow-sm">
+          <AlertTriangle className="h-5 w-5 mt-0.5 shrink-0 text-red-600 stroke-[2.2] drop-shadow-xs" />
           <div className="space-y-1">
-            <h4 className="font-semibold text-sm">
+            <h4 className="font-semibold text-sm text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">
               Daily Reporting Delinquency Notice — {outstandingCount} Officer(s) Outstanding
             </h4>
-            <p className="text-xs leading-relaxed text-destructive/90">
+            <p className="text-xs leading-relaxed text-white font-medium drop-shadow-[0_1px_1px_rgba(0,0,0,0.7)]">
               In accordance with LNPATS Academy standard operating procedures, daily reports must be
               submitted by assigned personnel for supervisory oversight and headquarters compilation.
               {isPastDeadline && ' Official 17:00 submission deadline has elapsed.'}
