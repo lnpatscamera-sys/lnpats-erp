@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useAuth } from '@/lib/auth';
 import { refreshHR, uploadHR, openHR, details, type HRData, type Employee } from '@/lib/hr';
-import { POLICE_RANKS } from '@/lib/police-ranks';
+import { policeRankOptions } from '@/lib/police-ranks';
 import { exportExcel, exportPdf } from '@/lib/export';
 import { enrollStaff } from '@/lib/enrollment.functions';
 import {
@@ -36,7 +36,7 @@ import { ReportingSupervisors } from '@/components/ReportingSupervisors';
 import { FileText } from 'lucide-react';
 import { PersonnelReportModal } from './PersonnelReportModal';
 
-type F = { placeholder?: string; required?: boolean; name: string; label: string; type?: string; options?: string[] | { value: string; label: string }[]; col?: boolean; wide?: boolean };
+type F = { placeholder?: string; required?: boolean; name: string; label: string; type?: string; options?: string[] | { value: string; label: string; disabled?: boolean }[]; col?: boolean; wide?: boolean };
 const COLUMN_FIELDS = new Set(['service_number', 'first_name', 'middle_name', 'last_name', 'gender', 'date_of_birth', 'nationality', 'marital_status', 'blood_group', 'phone', 'email', 'address', 'county', 'employment_status', 'employment_type', 'office_id', 'section_id', 'rank', 'position', 'date_joined', 'supervisor_id', 'establishment_post_id', 'lnp_class_number', 'education', 'promotion_history', 'training_history']);
 
 function Section({ title, fields, rec }: { title: string; fields: F[]; rec: Record<string, string> }) {
@@ -50,7 +50,7 @@ function Section({ title, fields, rec }: { title: string; fields: F[]; rec: Reco
             {f.options ? (
               <select id={`he-${f.name}`} name={f.name} defaultValue={rec[f.name] ?? ''} className="w-full h-9 rounded-md border bg-background px-2 text-sm">
                 <option value="">—</option>
-                {f.options.map(o => typeof o === 'string' ? <option key={o} value={o}>{o}</option> : <option key={o.value} value={o.value}>{o.label}</option>)}
+                {f.options.map(o => typeof o === 'string' ? <option key={o} value={o}>{o}</option> : <option key={o.value} value={o.value} disabled={o.disabled}>{o.label}</option>)}
               </select>
             ) : f.type === 'area' ? (
               <Textarea id={`he-${f.name}`} name={f.name} defaultValue={rec[f.name] ?? ''} rows={2} />
@@ -106,6 +106,23 @@ export function HREnrollment({ d }: { d: HRData }) {
     && (!fDept || e.office_id === fDept) && (!fRank || e.rank === fRank) && (!fCat || e.personnel_category === fCat) && (!fStatus || e.employment_status === fStatus)), [emps, q, fDept, fRank, fCat, fStatus, showArchived]);
 
   const rows = () => list.map(e => ({ 'Staff File Number': e.form_number, 'Employee No.': e.employee_number, 'ID type': idLabel(e.personnel_category), 'ID Number': e.service_number, Name: e.full_name, Category: e.personnel_category, Rank: e.rank, Department: officeName(e.office_id), Position: e.position, 'Official email': e.official_email, 'Personal email': e.email, Phone: e.phone, 'Date joined LNP': e.date_joined, 'Retirement eligibility': e.retirement_date, Status: e.employment_status, Enrollment: e.enrollment_status, Email: e.email_status === 'sent' ? 'Sent' : 'Not sent' }));
+
+  const { data: commandantId } = useQuery({
+    queryKey: ['commandant-appointment'],
+    queryFn: async () => {
+      const r = await supabase.from('reporting_lines').select('officer_id').eq('kind', 'Commandant').maybeSingle();
+      if (r.error) throw r.error;
+      return r.data?.officer_id ?? null;
+    },
+  });
+  // The Commandant (from Command & Reports appointments) is listed first; other staff follow.
+  const supervisorOptions = (selfId?: string) => {
+    const commandant = emps.find(x => x.id === commandantId && !x.archived_at);
+    const head = commandant
+      ? (commandant.id === selfId ? [] : [{ value: commandant.id, label: `Commandant — ${commandant.rank} ${commandant.full_name}` }])
+      : [{ value: '__no_commandant', label: 'Commandant — not yet appointed in Command & Reports', disabled: true }];
+    return [...head, ...emps.filter(x => !x.archived_at && x.id !== selfId && x.id !== commandant?.id).map(x => ({ value: x.id, label: `${x.rank} ${x.full_name}` }))];
+  };
 
   const open = (e: Employee | 'new') => { setEditing(e); setCategory(e === 'new' ? '' : e.personnel_category ?? ''); setPhoto(null); setDob(e === 'new' ? '' : e.date_of_birth ?? ''); };
   const rec: Record<string, string> = editing && editing !== 'new' ? { ...details(editing.enrollment_profile), ...Object.fromEntries(Object.entries(editing).map(([k, v]) => [k, v == null ? '' : String(v)])) } : {};
@@ -182,13 +199,13 @@ export function HREnrollment({ d }: { d: HRData }) {
         <Input placeholder="Search name or number" value={q} onChange={e => setQ(e.target.value)} className="w-56" aria-label="Search personnel" />
         {[
           [fDept, setFDept, 'Department', d.offices.map(o => ({ value: o.id, label: o.name }))],
-          [fRank, setFRank, 'Rank', [...POLICE_RANKS.map(r => r.name), 'Civilian'].map(r => ({ value: r, label: r }))],
+          [fRank, setFRank, 'Rank', [...policeRankOptions(), { value: 'Civilian', label: 'Civilian' }]],
           [fCat, setFCat, 'Category', PERSONNEL_CATEGORIES.map(c => ({ value: c, label: c }))],
           [fStatus, setFStatus, 'Status', EMPLOYMENT_STATUSES.map(c => ({ value: c, label: c }))]
         ].map(([v, set, label, opts]) => (
           <select key={label as string} aria-label={label as string} value={v as string} onChange={e => (set as (x: string) => void)(e.target.value)} className="h-9 rounded-md border bg-background px-2 text-sm">
             <option value="">All {(label as string).toLowerCase()}s</option>
-            {(opts as { value: string; label: string }[]).map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+            {(opts as { value: string; label: string }[]).map(o => <option key={o.value} value={o.value} disabled={o.disabled}>{o.label}</option>)}
           </select>
         ))}
         <label className="text-sm flex items-center gap-1">
@@ -297,7 +314,7 @@ export function HREnrollment({ d }: { d: HRData }) {
             <PassportPhotoPicker required currentPath={rec['photo_url'] || null} onChange={setPhoto} officerId={editing !== 'new' ? editing?.id : undefined} onUploaded={() => refreshHR(qc)} />
             <Section rec={rec} title="Personal information" fields={[{ name: 'service_number', label: `${idLabel(category)} *`, placeholder: `Enter ${idLabel(category)}`, required: true }, { name: 'first_name', label: 'First name *' }, { name: 'middle_name', label: 'Middle name' }, { name: 'last_name', label: 'Last name *' }, { name: 'gender', label: 'Gender', options: ['Male', 'Female'] }, { name: 'date_of_birth', label: 'Date of birth', type: 'date' }, { name: 'nationality', label: 'Nationality' }, { name: 'marital_status', label: 'Marital status', options: ['Single', 'Married', 'Divorced', 'Widowed'] }, { name: 'national_id', label: 'National ID number' }, { name: 'passport_number', label: 'Passport number' }, { name: 'blood_group', label: 'Blood group', options: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] }, { name: 'lnp_class_number', label: 'LNP Class number' }]} />
             <Section rec={rec} title="Contact information" fields={[{ name: 'phone', label: 'Mobile number', type: 'tel' }, { name: 'work_phone', label: 'Work phone', type: 'tel' }, { name: 'alt_phone', label: 'Alternative phone', type: 'tel' }, { name: 'email', label: 'Personal email', type: 'email' }, { name: 'official_email', label: 'Official email', type: 'email' }, { name: 'county', label: 'County' }, { name: 'district', label: 'District' }, { name: 'city', label: 'City / town' }, { name: 'address', label: 'Address' }, { name: 'emergency_name', label: 'Emergency contact name' }, { name: 'emergency_relationship', label: 'Relationship' }, { name: 'emergency_phone', label: 'Emergency contact number', type: 'tel' }]} />
-            <Section rec={rec} title="Employment information" fields={[{ name: 'employment_status', label: 'Employment status', options: EMPLOYMENT_STATUSES }, { name: 'employment_type', label: 'Employment type', options: EMPLOYMENT_TYPES }, { name: 'office_id', label: 'Department', options: d.offices.map(o => ({ value: o.id, label: o.name })) }, { name: 'section_id', label: 'Unit / section', options: sections.map(o => ({ value: o.id, label: o.name })) }, { name: 'rank', label: 'Rank', options: [...POLICE_RANKS.map(r => r.name), 'Civilian', ...(rec['rank'] && !POLICE_RANKS.some(r => r.name === rec['rank']) && rec['rank'] !== 'Civilian' ? [rec['rank']] : [])] }, { name: 'date_joined', label: 'Date joined LNP', type: 'date' }, { name: 'appointment_date', label: 'Current appointment date', type: 'date' }, { name: 'duty_station', label: 'Duty station' }, { name: 'supervisor_id', label: 'Reporting supervisor', options: emps.filter(x => !x.archived_at && x.id !== rec['id']).map(x => ({ value: x.id, label: `${x.rank} ${x.full_name}` })) }, { name: 'salary_grade', label: 'Salary grade' }, { name: 'salary_amount', label: 'Salary amount (USD)', type: 'number' }]} />
+            <Section rec={rec} title="Employment information" fields={[{ name: 'employment_status', label: 'Employment status', options: EMPLOYMENT_STATUSES }, { name: 'employment_type', label: 'Employment type', options: EMPLOYMENT_TYPES }, { name: 'office_id', label: 'Department', options: d.offices.map(o => ({ value: o.id, label: o.name })) }, { name: 'section_id', label: 'Unit / section', options: sections.map(o => ({ value: o.id, label: o.name })) }, { name: 'rank', label: 'Rank', options: [...policeRankOptions(rec['rank'] === 'Civilian' ? undefined : rec['rank']), { value: 'Civilian', label: 'Civilian' }] }, { name: 'date_joined', label: 'Date joined LNP', type: 'date' }, { name: 'appointment_date', label: 'Current appointment date', type: 'date' }, { name: 'duty_station', label: 'Duty station' }, { name: 'supervisor_id', label: 'Reporting supervisor', options: supervisorOptions(rec['id']) }, { name: 'salary_grade', label: 'Salary grade' }, { name: 'salary_amount', label: 'Salary amount (USD)', type: 'number' }]} />
             <EstablishmentPicker officerId={rec['id']} postId={rec['establishment_post_id']} position={rec['position']} />
             {(() => { const r = retirementSummary(dob, liberiaDate()); return <div className="grid sm:grid-cols-3 gap-3"><div className="space-y-1"><Label htmlFor="he-retire">Retirement eligibility date (age 65)</Label><Input id="he-retire" readOnly value={r?.date || 'Enter date of birth'} className="bg-muted" /></div>{r && <p className="text-sm self-end pb-2">Age {r.age} · {r.remaining} years to retirement</p>}</div>; })()}
             {s.probation && <Section rec={rec} title="Probation" fields={[{ name: 'probation_start', label: 'Probation start', type: 'date' }, { name: 'probation_end', label: 'Probation end', type: 'date' }, { name: 'probation_notes', label: 'Probation notes', type: 'area', wide: true }]} />}
