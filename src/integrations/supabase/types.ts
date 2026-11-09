@@ -6980,6 +6980,7 @@ export type Database = {
       }
       attendance_device_watch: { Args: never; Returns: undefined }
       attendance_staff: { Args: never; Returns: boolean }
+      branding_file_reader: { Args: { _name: string }; Returns: boolean }
       can_read_document: { Args: { _id: string }; Returns: boolean }
       cancel_appointment: { Args: { _id: string }; Returns: undefined }
       command_accounts: { Args: never; Returns: Json }
@@ -7027,6 +7028,7 @@ export type Database = {
         Args: { _approve: boolean; _id: string; _note: string }
         Returns: undefined
       }
+      erp_member: { Args: never; Returns: boolean }
       facility_action: {
         Args: { _action: string; _id: string; _payload?: Json }
         Returns: undefined
@@ -7176,6 +7178,7 @@ export type Database = {
         Args: { _stage: number }
         Returns: Database["public"]["Enums"]["app_role"][]
       }
+      training_reader: { Args: never; Returns: boolean }
       transfer_inventory: {
         Args: {
           _from: string
