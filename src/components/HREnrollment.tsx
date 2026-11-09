@@ -205,7 +205,7 @@ export function HREnrollment({ d }: { d: HRData }) {
         ].map(([v, set, label, opts]) => (
           <select key={label as string} aria-label={label as string} value={v as string} onChange={e => (set as (x: string) => void)(e.target.value)} className="h-9 rounded-md border bg-background px-2 text-sm">
             <option value="">All {(label as string).toLowerCase()}s</option>
-            {(opts as { value: string; label: string }[]).map(o => <option key={o.value} value={o.value} disabled={o.disabled}>{o.label}</option>)}
+            {(opts as { value: string; label: string }[]).map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
         ))}
         <label className="text-sm flex items-center gap-1">
