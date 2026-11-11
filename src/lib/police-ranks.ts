@@ -1,5 +1,6 @@
-/** Police seniority is descriptive; authorization remains role-based. */
+/** Police seniority is descriptive; authorization remains role-based. Listed highest to lowest. */
 export const POLICE_RANKS = [
+  { name: 'Inspector General of Police', abbreviation: 'IGP' },
   { name: 'Deputy Inspector General of Police', abbreviation: 'DIGP' },
   { name: 'Commissioner of Police', abbreviation: 'Comm.' },
   { name: 'Deputy Commissioner of Police', abbreviation: 'DCP' },
@@ -10,6 +11,7 @@ export const POLICE_RANKS = [
   { name: 'Inspector of Police', abbreviation: 'Insp.' },
   { name: 'Sergeant', abbreviation: 'SGT.' },
   { name: 'Corporal', abbreviation: 'Cpl.' },
+  { name: 'Patrolman', abbreviation: 'Ptl.' },
 ] as const;
 
 export function policeRankOptions(current?: string) {
