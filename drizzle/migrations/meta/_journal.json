@@ -449,6 +449,13 @@
       "when": 1794213321870,
       "tag": "0063_tighten_reference_read_rules",
       "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "7",
+      "when": 1794523762044,
+      "tag": "0064_auto_reporting_line",
+      "breakpoints": true
     }
   ]
 }
