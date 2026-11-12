@@ -3,16 +3,16 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Label } from '@/components/ui/label';
 
-/** Strips numbering prefixes like "1.2.1.2 UNIT:" from Microstructure unit names. */
-export function cleanUnitName(name: string) {
-  return name.replace(/^[\d.\s]+/, '').replace(/^(UNIT|DEPARTMENT|SECTION)\s*:\s*/i, '').replace(/:\s*$/, '').trim();
-}
+import { cleanUnitName } from '@/lib/supervisor-positions';
 
-async function load() {
+export { cleanUnitName };
+
+/** Shared Microstructure read: units, posts and the officers holding each post. */
+export async function loadEstablishment() {
   const [u, p, o] = await Promise.all([
     supabase.from('establishment_units').select('id,name,sort_order').order('sort_order'),
     supabase.from('establishment_posts').select('id,unit_id,title,authorized,sort_order').order('sort_order'),
-    supabase.from('officers').select('id,establishment_post_id').not('establishment_post_id', 'is', null),
+    supabase.from('officers').select('id,establishment_post_id,rank,position,archived_at').not('establishment_post_id', 'is', null),
   ]);
   for (const x of [u, p, o]) if (x.error) throw x.error;
   return { units: u.data!, posts: p.data!, officers: o.data! };
@@ -20,7 +20,7 @@ async function load() {
 
 /** Unit/Section and establishment position selector; submits establishment_post_id and position. */
 export function EstablishmentPicker({ officerId, postId, position }: { officerId?: string | undefined; postId?: string | undefined; position?: string | undefined }) {
-  const { data } = useQuery({ queryKey: ['establishment'], queryFn: load });
+  const { data } = useQuery({ queryKey: ['establishment'], queryFn: loadEstablishment });
   const [unit, setUnit] = useState('');
   const [post, setPost] = useState(postId ?? '');
   useEffect(() => { if (data && postId) setUnit(data.posts.find(p => p.id === postId)?.unit_id ?? ''); }, [data, postId]);

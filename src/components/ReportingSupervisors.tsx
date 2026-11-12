@@ -3,6 +3,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { refreshHR, type Employee } from '@/lib/hr';
+import { supervisorPositionOptions } from '@/lib/supervisor-positions';
+import { loadEstablishment } from './EstablishmentPicker';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
@@ -16,6 +18,7 @@ export function ReportingSupervisors({ employees }: { employees: Employee[] }) {
   const [q, setQ] = useState('');
   const [saving, setSaving] = useState<string | null>(null);
   const dir = useQuery({ queryKey: ['command-directory-hr'], enabled: open, queryFn: async () => { const r = await supabase.rpc('command_directory'); if (r.error) throw r.error; return r.data as unknown as Dir; } });
+  const est = useQuery({ queryKey: ['establishment'], enabled: open, queryFn: loadEstablishment });
   const active = useMemo(() => employees.filter(e => !e.archived_at), [employees]);
   const list = active.filter(e => `${e.full_name} ${e.service_number} ${e.rank}`.toLowerCase().includes(q.toLowerCase()));
   const name = (id: string | null | undefined) => { const o = active.find(x => x.id === id); return o ? `${o.rank ?? ''} ${o.full_name}`.trim() : null; };
@@ -41,7 +44,7 @@ export function ReportingSupervisors({ employees }: { employees: Employee[] }) {
         {list.length === 0 && <tr><td colSpan={5} className="p-3 text-muted-foreground">No officers match.</td></tr>}
         {list.map(e => { const c = chain(e); const missing = LEVELS.filter((_, i) => !c[i]); const sec = sections.find(s => s.id === e.section_id); return <tr key={e.id} className="border-t align-top">
           <td className="p-2"><div className="font-medium">{e.rank} {e.full_name}</div><div className="text-xs text-muted-foreground">{e.service_number}</div></td>
-          <td className="p-2 min-w-44"><select aria-label={`Reporting supervisor for ${e.full_name}`} disabled={saving === e.id} value={e.supervisor_id ?? ''} onChange={ev => void save(e.id, `Supervisor updated for ${e.full_name}`, () => supabase.from('officers').update({ supervisor_id: ev.target.value || null } as never).eq('id', e.id))} className={sel}><option value="">Not assigned</option>{active.filter(s => s.id !== e.id).map(s => <option key={s.id} value={s.id}>{s.rank} {s.full_name}{s.user_id ? '' : ' (no login)'}</option>)}</select></td>
+          <td className="p-2 min-w-44"><select aria-label={`Reporting supervisor for ${e.full_name}`} disabled={saving === e.id} value={e.supervisor_id ?? ''} onChange={ev => void save(e.id, `Supervisor updated for ${e.full_name}`, () => supabase.from('officers').update({ supervisor_id: ev.target.value || null } as never).eq('id', e.id))} className={sel}><option value="">Not assigned</option>{supervisorPositionOptions({ holders: active, posts: est.data?.posts ?? [], units: est.data?.units ?? [], commandantId: appt('Commandant', null), excludeId: e.id, currentId: e.supervisor_id }).map(o => <option key={o.value} value={o.value} disabled={o.disabled}>{o.label}{o.value && !active.find(x => x.id === o.value)?.user_id && !o.disabled ? ' (no login)' : ''}</option>)}</select></td>
           <td className="p-2 min-w-44"><select aria-label={`Section for ${e.full_name}`} disabled={saving === e.id} value={e.section_id ?? ''} onChange={ev => void save(e.id, `Section updated for ${e.full_name}`, () => supabase.from('officers').update({ section_id: ev.target.value || null } as never).eq('id', e.id))} className={sel}><option value="">Not assigned</option>{sections.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select></td>
           <td className="p-2 min-w-44">{sec ? <select aria-label={`Section Head for ${sec.name}`} disabled={saving === sec.id} value={sec.section_head ?? ''} onChange={ev => void save(sec.id, `Section Head set for ${sec.name}`, () => supabase.rpc('hr_assign_section_head', { _section: sec.id, _head: (ev.target.value || null) as string }))} className={sel}><option value="">Not assigned</option>{active.filter(s => s.user_id).map(s => <option key={s.id} value={s.id}>{s.rank} {s.full_name}</option>)}</select> : <span className="text-xs text-muted-foreground">Choose a section first</span>}</td>
           <td className="p-2 min-w-56 text-xs">{c.map((id, i) => <div key={LEVELS[i]}><span className="text-muted-foreground">{LEVELS[i]}:</span> {name(id) ?? <span className="text-destructive">Missing</span>}</div>)}{missing.length > 0 && <div className="mt-1 text-destructive font-medium">Reporting chain incomplete. Please assign all required supervisory positions.</div>}</td>
